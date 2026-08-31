@@ -1,0 +1,18 @@
+[package]
+name = "sengen_egui"
+edition = "2024"
+version = "0.1.0"
+
+# 宣言的UIラッパー。単独のGitリポジトリであり、親ワークスペースへ依存しない自己完結の定義を持つ
+# （サブモジュールとしてどのリポジトリへ埋めても、単独クローンでも、同じ条件でビルドできる）。
+# 依存は egui のみ。
+
+[dependencies]
+egui = "0.32"
+
+# 利用元リポジトリ（GameScriptingTheory）のワークスペースlintと同じ内容を自前で持つ。
+# workspace = true にしない理由は、単独クローンでのビルドを壊さないためである。
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+as_conversions = "deny"
