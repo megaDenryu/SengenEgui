@@ -9,9 +9,14 @@ pub struct スタイル {
     pub 文字色: Option<egui::Color32>,
     pub 太字: Option<bool>,
     pub 等幅: Option<bool>,
+    /// コンテナでは枠の塗り、ボタンでは面の塗りになる。
     pub 背景色: Option<egui::Color32>,
     pub 内余白: Option<i8>,
+    pub 外余白: Option<i8>,
     pub 角丸: Option<u8>,
+    /// 枠線を引くときの色。太さ未指定なら1.0で引く。
+    pub 枠線色: Option<egui::Color32>,
+    pub 枠線太さ: Option<f32>,
 }
 
 impl スタイル {
@@ -23,7 +28,10 @@ impl スタイル {
         等幅: None,
         背景色: None,
         内余白: None,
+        外余白: None,
         角丸: None,
+        枠線色: None,
+        枠線太さ: None,
     };
 
     /// 上書き側の指定を優先して2つのスタイルを合成する。「基本 + 状態差分」の派生に使う。
@@ -36,7 +44,10 @@ impl スタイル {
             等幅: 上書き.等幅.or(self.等幅),
             背景色: 上書き.背景色.or(self.背景色),
             内余白: 上書き.内余白.or(self.内余白),
+            外余白: 上書き.外余白.or(self.外余白),
             角丸: 上書き.角丸.or(self.角丸),
+            枠線色: 上書き.枠線色.or(self.枠線色),
+            枠線太さ: 上書き.枠線太さ.or(self.枠線太さ),
         }
     }
 }

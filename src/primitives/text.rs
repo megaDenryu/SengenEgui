@@ -5,6 +5,7 @@ use crate::style::スタイル;
 pub struct 文章型 {
     内容: String,
     装飾値: スタイル,
+    折り返し禁止: bool,
 }
 
 impl 文章型 {
@@ -12,6 +13,7 @@ impl 文章型 {
         Self {
             内容,
             装飾値: スタイル::無指定,
+            折り返し禁止: false,
         }
     }
 
@@ -21,10 +23,21 @@ impl 文章型 {
         self
     }
 
+    /// 折り返さず、幅が足りなければ末尾を省略記号で切り詰める。
+    /// 仮想化リストのように行高さが一定である前提の場所で使う。
+    pub fn 折り返さない(mut self) -> Self {
+        self.折り返し禁止 = true;
+        self
+    }
+
     pub(crate) fn 描画する(&self, ui: &mut egui::Ui) {
         let 文字 = self
             .装飾値
             .文字へ適用する(egui::RichText::new(self.内容.clone()));
-        ui.label(文字);
+        if self.折り返し禁止 {
+            ui.add(egui::Label::new(文字).truncate());
+        } else {
+            ui.label(文字);
+        }
     }
 }

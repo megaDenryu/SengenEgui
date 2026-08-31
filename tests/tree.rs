@@ -46,3 +46,52 @@ fn 描画できて操作が無ければ応答は空になる() {
         });
     });
 }
+
+/// ポインタ操作を合成して1フレーム描画し、発した応答を返す。
+fn 操作付きで描画する(
+    文脈: &egui::Context, 出来事一覧: Vec<egui::Event>
+) -> Vec<u8> {
+    let mut 集まり = Vec::new();
+    let 入力 = egui::RawInput {
+        events: 出来事一覧,
+        ..Default::default()
+    };
+    let _ = 文脈.run(入力, |文脈| {
+        egui::CentralPanel::default().show(文脈, |ui| {
+            let 木: ノード<u8> = 縦積み(子![ボタン("押す", 1u8).最小幅(300.0)]).into();
+            let 木 = 木.写す(|番号| 番号 + 10);
+            集まり.extend(木.描画して集める(ui));
+        });
+    });
+    集まり
+}
+
+#[test]
+fn クリックを合成するとボタンの応答が写された値で集まる() {
+    let 文脈 = egui::Context::default();
+    let 位置 = egui::pos2(30.0, 18.0);
+    let 修飾 = egui::Modifiers::default();
+    let _ = 操作付きで描画する(&文脈, vec![]);
+    let _ = 操作付きで描画する(
+        &文脈,
+        vec![
+            egui::Event::PointerMoved(位置),
+            egui::Event::PointerButton {
+                pos: 位置,
+                button: egui::PointerButton::Primary,
+                pressed: true,
+                modifiers: 修飾,
+            },
+        ],
+    );
+    let 集まり = 操作付きで描画する(
+        &文脈,
+        vec![egui::Event::PointerButton {
+            pos: 位置,
+            button: egui::PointerButton::Primary,
+            pressed: false,
+            modifiers: 修飾,
+        }],
+    );
+    assert_eq!(集まり, vec![11]);
+}

@@ -34,3 +34,19 @@ impl<M> 切り替え型<M> {
         }
     }
 }
+
+impl<M: 'static> 切り替え型<M> {
+    /// 応答型を別の型へ写す。ノードの `写す` から呼ばれる。
+    pub(crate) fn 写す<N: 'static>(
+        self,
+        変換: std::rc::Rc<dyn Fn(M) -> N>,
+    ) -> 切り替え型<N> {
+        let 元の変更 = self.変更;
+        切り替え型 {
+            表示: self.表示,
+            値: self.値,
+            変更: Box::new(move |値| 変換(元の変更(値))),
+            装飾値: self.装飾値,
+        }
+    }
+}
