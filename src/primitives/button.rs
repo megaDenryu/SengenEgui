@@ -1,35 +1,29 @@
-//! ボタン。押下時の処理は `押されたら` で渡し、描画と入力検出を利用側の式から分離する。
+//! ボタン。押されたら応答の値を発行する。処理そのものは持たない（lib.rs 方針2）。
 
-use crate::{node::ノード, source::文字列源, style::スタイル};
+use crate::style::スタイル;
 
-pub struct ボタンノード {
-    源: 文字列源,
+pub struct ボタン型<M> {
+    表示: String,
+    応答: M,
     装飾値: スタイル,
-    押下時: Option<Box<dyn FnMut()>>,
-    有効判定: Option<Box<dyn Fn() -> bool>>,
-    最小幅: Option<f32>,
+    有効指定: bool,
+    最小幅指定: Option<f32>,
 }
 
-impl ボタンノード {
-    pub(crate) fn 新規(源: 文字列源) -> Self {
+impl<M> ボタン型<M> {
+    pub(crate) fn 新規(表示: String, 応答: M) -> Self {
         Self {
-            源,
+            表示,
+            応答,
             装飾値: スタイル::無指定,
-            押下時: None,
-            有効判定: None,
-            最小幅: None,
+            有効指定: true,
+            最小幅指定: None,
         }
     }
 
-    /// 押された瞬間に呼ばれる処理を設定する。
-    pub fn 押されたら(mut self, 処理: impl FnMut() + 'static) -> Self {
-        self.押下時 = Some(Box::new(処理));
-        self
-    }
-
-    /// 有効条件を設定する。false の間は淡色になり押せない。毎フレーム判定を取りに行く。
-    pub fn 有効条件(mut self, 判定: impl Fn() -> bool + 'static) -> Self {
-        self.有効判定 = Some(Box::new(判定));
+    /// 有効・無効を指定する。false の間は淡色になり押せない。値はこのフレームの判定を渡す。
+    pub fn 有効(mut self, 有効: bool) -> Self {
+        self.有効指定 = 有効;
         self
     }
 
@@ -39,25 +33,22 @@ impl ボタンノード {
     }
 
     pub fn 最小幅(mut self, 幅: f32) -> Self {
-        self.最小幅 = Some(幅);
+        self.最小幅指定 = Some(幅);
         self
     }
 }
 
-impl ノード for ボタンノード {
-    fn 描画する(&mut self, ui: &mut egui::Ui) {
-        let 有効 = self.有効判定.as_ref().is_none_or(|判定| 判定());
+impl<M: Clone> ボタン型<M> {
+    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 集配: &mut Vec<M>) {
         let 文字 = self
             .装飾値
-            .文字へ適用する(egui::RichText::new(self.源.現在値()));
+            .文字へ適用する(egui::RichText::new(self.表示.clone()));
         let mut 部品 = egui::Button::new(文字);
-        if let Some(幅) = self.最小幅 {
+        if let Some(幅) = self.最小幅指定 {
             部品 = 部品.min_size(egui::vec2(幅, 0.0));
         }
-        if ui.add_enabled(有効, 部品).clicked()
-            && let Some(処理) = self.押下時.as_mut()
-        {
-            処理();
+        if ui.add_enabled(self.有効指定, 部品).clicked() {
+            集配.push(self.応答.clone());
         }
     }
 }

@@ -1,24 +1,20 @@
-//! チェックボックス。値の読みと書きを別クロージャで渡す双方向バインディング。
+//! チェックボックス。現在値はこのフレームの値を渡し、変更は新しい値から応答を作って発行する。
 
-use crate::{node::ノード, source::文字列源, style::スタイル};
+use crate::style::スタイル;
 
-pub struct 切り替えノード {
-    表示: 文字列源,
-    読み: Box<dyn Fn() -> bool>,
-    書き: Box<dyn FnMut(bool)>,
+pub struct 切り替え型<M> {
+    表示: String,
+    値: bool,
+    変更: Box<dyn Fn(bool) -> M>,
     装飾値: スタイル,
 }
 
-impl 切り替えノード {
-    pub(crate) fn 新規(
-        表示: 文字列源,
-        読み: Box<dyn Fn() -> bool>,
-        書き: Box<dyn FnMut(bool)>,
-    ) -> Self {
+impl<M> 切り替え型<M> {
+    pub(crate) fn 新規(表示: String, 値: bool, 変更: Box<dyn Fn(bool) -> M>) -> Self {
         Self {
             表示,
-            読み,
-            書き,
+            値,
+            変更,
             装飾値: スタイル::無指定,
         }
     }
@@ -27,16 +23,14 @@ impl 切り替えノード {
         self.装飾値 = 指定;
         self
     }
-}
 
-impl ノード for 切り替えノード {
-    fn 描画する(&mut self, ui: &mut egui::Ui) {
-        let mut 値 = (self.読み)();
+    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 集配: &mut Vec<M>) {
+        let mut 値 = self.値;
         let 文字 = self
             .装飾値
-            .文字へ適用する(egui::RichText::new(self.表示.現在値()));
+            .文字へ適用する(egui::RichText::new(self.表示.clone()));
         if ui.checkbox(&mut 値, 文字).changed() {
-            (self.書き)(値);
+            集配.push((self.変更)(値));
         }
     }
 }
