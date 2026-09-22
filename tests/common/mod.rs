@@ -71,3 +71,19 @@ pub fn 左クリックする<M: Clone>(
 ) -> Vec<M> {
     クリックする(文脈, 位置, egui::PointerButton::Primary, 木を組む)
 }
+
+/// キーの押下の出来事を作る。
+pub fn キー押下(キー: egui::Key, 修飾キー: egui::Modifiers) -> egui::Event {
+    egui::Event::Key {
+        key: キー,
+        physical_key: None,
+        pressed: true,
+        repeat: false,
+        modifiers: 修飾キー,
+    }
+}
+
+/// 文字入力の出来事を作る。
+pub fn 文字入力(文字: &str) -> egui::Event {
+    egui::Event::Text(文字.to_string())
+}

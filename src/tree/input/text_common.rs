@@ -3,11 +3,15 @@
 //! 既定は毎キー発行で、描画後に状態へ適用されれば次のフレームで値がつながる。
 //! IME変換や高価な適用処理と相性が悪い場面では `確定時のみ発行` を使う。
 //! 確定時のみ発行では編集中の下書きを egui の一時記憶に置き、
-//! フォーカスが外れた（Enterを含む）ときだけ応答を発行する。
+//! フォーカスが外れた（Enterを含む）ときだけ応答を発行する。Escape でフォーカスが外れたときは
+//! 取り消しとして下書きを捨て、応答を発行しない。下書きの寿命は `draft` が決める。
+
+mod draft;
 
 use std::rc::Rc;
 
 use crate::measure::論理画素;
+use draft::下書きの置き場;
 
 pub(super) struct テキスト入力の共通<M> {
     値: String,
@@ -70,19 +74,19 @@ impl<M> テキスト入力の共通<M> {
             }
             return 反応;
         };
-        let 鍵 = ui.make_persistent_id(識別子);
-        let mut 下書き = ui
-            .data_mut(|記憶| 記憶.get_temp::<String>(鍵))
-            .unwrap_or_else(|| self.値.clone());
+        let 置き場 = 下書きの置き場::新規(ui, 識別子);
+        let 取り出した = 置き場.取り出す(ui, &self.値);
+        let mut 下書き = 取り出した.本文;
         let 反応 = ui.add(self.共通の指定を適用する(部品を組む(&mut 下書き)));
-        if 反応.changed() {
-            ui.data_mut(|記憶| 記憶.insert_temp(鍵, 下書き.clone()));
+        let 外れた = 反応.lost_focus() || (取り出した.フォーカスを持っていた && !反応.has_focus());
+        if !外れた {
+            置き場.保存する(ui, 下書き, self.値.clone(), 反応.has_focus());
+            return 反応;
         }
-        if 反応.lost_focus() {
-            ui.data_mut(|記憶| 記憶.remove::<String>(鍵));
-            if 下書き != self.値 {
-                発行した応答.push((self.新しい値から応答を作る)(下書き));
-            }
+        置き場.捨てる(ui);
+        let 取り消した = ui.input(|入力| 入力.key_down(egui::Key::Escape));
+        if !取り消した && 下書き != self.値 {
+            発行した応答.push((self.新しい値から応答を作る)(下書き));
         }
         反応
     }

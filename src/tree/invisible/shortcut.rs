@@ -1,12 +1,15 @@
-//! キー操作。画面に何も描かず、そのフレームにキーの組が押されていたら応答を発行する。
+//! キー操作。画面に何も描かず、キーの組が押されたら応答を発行する。振る舞いは次のとおり。
 //!
-//! 発行の判定は egui の `consume_shortcut` で行い、押下の事象を消費する（同じ組を見張る
-//! 別の部品には届かない）。文字入力欄にフォーカスがあるときも修飾キー付きの組は届く。
-//! 修飾キー無しの文字キーは、木の中でこの部品より先に描画された入力欄が文字として消費した
-//! 後には残らないため、そのような組は木の先頭に置くか、修飾キー付きの組にする。
+//! - 修飾キーは厳密に一致させる（Ctrl+S は Ctrl+Shift+S では発行しない）。一致した押下の事象は消費する
+//! - Ctrl・Command・Alt を含まない組（文字キー・Enter・Backspace 等）は、どこかの部品がキー入力を
+//!   欲しがっている間（`wants_keyboard_input`。入力欄にフォーカスがある間）は見張らず、事象も消費しない
+//! - 修飾キーを含む組が押されたとき、フォーカスを持つ部品があればそのフォーカスを手放させ、
+//!   応答は次の描画の回に発行する。確定時のみ発行の入力欄はフォーカスが外れた回に確定の応答を出すため、
+//!   入力欄の確定がキー操作の応答より先に並ぶ。フォーカスを持つ部品が無ければその回に発行する
+//! - 木の中でこの部品より先に描画された部品が事象を消費していれば、その押下は見えない
 
 /// キーの組とは、修飾キーとキーを合わせた1つの押し方のことである。
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct キーの組(egui::KeyboardShortcut);
 
 impl キーの組 {
@@ -18,6 +21,24 @@ impl キーの組 {
     /// 修飾キーを押さない単独のキーの組。
     pub const fn 単独(キー: egui::Key) -> Self {
         Self::生成する(egui::Modifiers::NONE, キー)
+    }
+
+    fn 修飾キーを含むか(self) -> bool {
+        let 修飾 = self.0.modifiers;
+        修飾.ctrl || 修飾.command || 修飾.mac_cmd || 修飾.alt
+    }
+
+    /// 厳密に一致する押下の事象を1つ消費し、あったかを返す。
+    fn 押下を消費する(self, 入力: &mut egui::InputState) -> bool {
+        let 一致する = |事象: &egui::Event| {
+            matches!(事象, egui::Event::Key { key, modifiers, pressed: true, .. }
+                if *key == self.0.logical_key && modifiers.matches_exact(self.0.modifiers))
+        };
+        let Some(位置) = 入力.events.iter().position(一致する) else {
+            return false;
+        };
+        入力.events.remove(位置);
+        true
     }
 }
 
@@ -49,9 +70,27 @@ impl<M: Clone> キー操作型<M> {
         ui: &mut egui::Ui,
         発行した応答: &mut Vec<M>,
     ) -> egui::Response {
-        let 押された = ui.input_mut(|入力| 入力.consume_shortcut(&self.キーの組.0));
-        if 押された {
+        let 保留の鍵 = ui.make_persistent_id(("キー操作の保留", self.キーの組));
+        let 保留していた = ui
+            .data_mut(|記憶| 記憶.remove_temp::<bool>(保留の鍵))
+            .is_some();
+        if 保留していた {
             発行した応答.push(self.応答.clone());
+            return ui.response();
+        }
+        if !self.キーの組.修飾キーを含むか() && ui.ctx().wants_keyboard_input() {
+            return ui.response();
+        }
+        if !ui.input_mut(|入力| self.キーの組.押下を消費する(入力)) {
+            return ui.response();
+        }
+        match ui.memory(|記憶| 記憶.focused()) {
+            None => 発行した応答.push(self.応答.clone()),
+            Some(フォーカスの識別子) => {
+                ui.memory_mut(|記憶| 記憶.surrender_focus(フォーカスの識別子));
+                ui.data_mut(|記憶| 記憶.insert_temp(保留の鍵, true));
+                ui.ctx().request_repaint();
+            }
         }
         ui.response()
     }
