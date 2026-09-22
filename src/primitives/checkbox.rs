@@ -1,15 +1,15 @@
-//! チェックボックス。現在値はこのフレームの値を渡し、変更は新しい値から応答を作って発行する。
+//! チェックボックスの記述と描画。現在値はこのフレームの値を渡し、変更は新しい値から応答を作って発行する。
 
 use crate::style::スタイル;
 
-pub struct 切り替え型<M> {
+pub struct チェックボックス型<M> {
     表示: String,
     値: bool,
     変更: Box<dyn Fn(bool) -> M>,
     装飾値: スタイル,
 }
 
-impl<M> 切り替え型<M> {
+impl<M> チェックボックス型<M> {
     pub(crate) fn 新規(表示: String, 値: bool, 変更: Box<dyn Fn(bool) -> M>) -> Self {
         Self {
             表示,
@@ -35,14 +35,14 @@ impl<M> 切り替え型<M> {
     }
 }
 
-impl<M: 'static> 切り替え型<M> {
+impl<M: 'static> チェックボックス型<M> {
     /// 応答型を別の型へ写す。ノードの `写す` から呼ばれる。
     pub(crate) fn 写す<N: 'static>(
         self,
         変換: std::rc::Rc<dyn Fn(M) -> N>,
-    ) -> 切り替え型<N> {
+    ) -> チェックボックス型<N> {
         let 元の変更 = self.変更;
-        切り替え型 {
+        チェックボックス型 {
             表示: self.表示,
             値: self.値,
             変更: Box::new(move |値| 変換(元の変更(値))),

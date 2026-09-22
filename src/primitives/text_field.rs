@@ -5,7 +5,7 @@
 //! 確定時のみ発行では編集中の下書きを egui の一時記憶に置き、
 //! フォーカスが外れた（Enterを含む）ときだけ応答を発行する。
 
-pub struct 入力欄型<M> {
+pub struct 一行テキスト入力型<M> {
     値: String,
     変更: Box<dyn Fn(String) -> M>,
     幅指定: Option<f32>,
@@ -13,7 +13,7 @@ pub struct 入力欄型<M> {
     確定時識別子: Option<String>,
 }
 
-impl<M> 入力欄型<M> {
+impl<M> 一行テキスト入力型<M> {
     pub(crate) fn 新規(値: String, 変更: Box<dyn Fn(String) -> M>) -> Self {
         Self {
             値,
@@ -87,11 +87,14 @@ impl<M> 入力欄型<M> {
     }
 }
 
-impl<M: 'static> 入力欄型<M> {
+impl<M: 'static> 一行テキスト入力型<M> {
     /// 応答型を別の型へ写す。ノードの `写す` から呼ばれる。
-    pub(crate) fn 写す<N: 'static>(self, 変換: std::rc::Rc<dyn Fn(M) -> N>) -> 入力欄型<N> {
+    pub(crate) fn 写す<N: 'static>(
+        self,
+        変換: std::rc::Rc<dyn Fn(M) -> N>,
+    ) -> 一行テキスト入力型<N> {
         let 元の変更 = self.変更;
-        入力欄型 {
+        一行テキスト入力型 {
             値: self.値,
             変更: Box::new(move |値| 変換(元の変更(値))),
             幅指定: self.幅指定,

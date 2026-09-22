@@ -1,6 +1,8 @@
 //! 各ノード種別から直和型への変換。`子!` マクロがこの変換を各子要素に対して呼ぶ。
 
-use crate::primitives::{ボタン型, 入力欄型, 切り替え型, 文章型};
+use crate::primitives::{
+    チェックボックス型, ボタン型, 一行テキスト入力型, 文章型
+};
 use crate::tree::{
     ウィンドウ型, スクロール型, ノード, 仮想列型, 折り畳み型, 格子型, 積み型
 };
@@ -17,15 +19,15 @@ impl<M> From<ボタン型<M>> for ノード<M> {
     }
 }
 
-impl<M> From<切り替え型<M>> for ノード<M> {
-    fn from(値: 切り替え型<M>) -> Self {
-        Self::切り替え(値)
+impl<M> From<チェックボックス型<M>> for ノード<M> {
+    fn from(値: チェックボックス型<M>) -> Self {
+        Self::チェックボックス(値)
     }
 }
 
-impl<M> From<入力欄型<M>> for ノード<M> {
-    fn from(値: 入力欄型<M>) -> Self {
-        Self::入力欄(値)
+impl<M> From<一行テキスト入力型<M>> for ノード<M> {
+    fn from(値: 一行テキスト入力型<M>) -> Self {
+        Self::一行テキスト入力(値)
     }
 }
 
