@@ -7,17 +7,19 @@
 
 pub struct 一行テキスト入力型<M> {
     値: String,
-    変更: Box<dyn Fn(String) -> M>,
+    新しい値から応答を作る: Box<dyn Fn(String) -> M>,
     幅指定: Option<f32>,
     案内文指定: Option<String>,
     確定時識別子: Option<String>,
 }
 
 impl<M> 一行テキスト入力型<M> {
-    pub(crate) fn 新規(値: String, 変更: Box<dyn Fn(String) -> M>) -> Self {
+    pub(crate) fn 新規(
+        値: String, 新しい値から応答を作る: Box<dyn Fn(String) -> M>
+    ) -> Self {
         Self {
             値,
-            変更,
+            新しい値から応答を作る,
             幅指定: None,
             案内文指定: None,
             確定時識別子: None,
@@ -53,22 +55,25 @@ impl<M> 一行テキスト入力型<M> {
         部品
     }
 
-    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 集配: &mut Vec<M>) {
+    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 発行した応答: &mut Vec<M>) {
         match &self.確定時識別子 {
-            None => self.毎キーで描画する(ui, 集配),
-            Some(識別子) => self.確定時のみで描画する(ui, 集配, 識別子),
+            None => self.毎キーで描画する(ui, 発行した応答),
+            Some(識別子) => self.確定時のみで描画する(ui, 発行した応答, 識別子),
         }
     }
 
-    fn 毎キーで描画する(&self, ui: &mut egui::Ui, 集配: &mut Vec<M>) {
+    fn 毎キーで描画する(&self, ui: &mut egui::Ui, 発行した応答: &mut Vec<M>) {
         let mut 値 = self.値.clone();
         if ui.add(self.部品を組む(&mut 値)).changed() {
-            集配.push((self.変更)(値));
+            発行した応答.push((self.新しい値から応答を作る)(値));
         }
     }
 
     fn 確定時のみで描画する(
-        &self, ui: &mut egui::Ui, 集配: &mut Vec<M>, 識別子: &str
+        &self,
+        ui: &mut egui::Ui,
+        発行した応答: &mut Vec<M>,
+        識別子: &str,
     ) {
         let 鍵 = ui.make_persistent_id(識別子);
         let mut 下書き = ui
@@ -81,7 +86,7 @@ impl<M> 一行テキスト入力型<M> {
         if 応答.lost_focus() {
             ui.data_mut(|記憶| 記憶.remove::<String>(鍵));
             if 下書き != self.値 {
-                集配.push((self.変更)(下書き));
+                発行した応答.push((self.新しい値から応答を作る)(下書き));
             }
         }
     }
@@ -91,12 +96,14 @@ impl<M: 'static> 一行テキスト入力型<M> {
     /// 応答型を別の型へ写す。ノードの `写す` から呼ばれる。
     pub(crate) fn 写す<N: 'static>(
         self,
-        変換: std::rc::Rc<dyn Fn(M) -> N>,
+        応答を変換する: std::rc::Rc<dyn Fn(M) -> N>,
     ) -> 一行テキスト入力型<N> {
-        let 元の変更 = self.変更;
+        let 元の変更 = self.新しい値から応答を作る;
         一行テキスト入力型 {
             値: self.値,
-            変更: Box::new(move |値| 変換(元の変更(値))),
+            新しい値から応答を作る: Box::new(move |値| {
+                応答を変換する(元の変更(値))
+            }),
             幅指定: self.幅指定,
             案内文指定: self.案内文指定,
             確定時識別子: self.確定時識別子,

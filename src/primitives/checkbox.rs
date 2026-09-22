@@ -3,18 +3,22 @@
 use crate::style::スタイル;
 
 pub struct チェックボックス型<M> {
-    表示: String,
+    表示文字列: String,
     値: bool,
-    変更: Box<dyn Fn(bool) -> M>,
+    新しい値から応答を作る: Box<dyn Fn(bool) -> M>,
     装飾値: スタイル,
 }
 
 impl<M> チェックボックス型<M> {
-    pub(crate) fn 新規(表示: String, 値: bool, 変更: Box<dyn Fn(bool) -> M>) -> Self {
+    pub(crate) fn 新規(
+        表示文字列: String,
+        値: bool,
+        新しい値から応答を作る: Box<dyn Fn(bool) -> M>,
+    ) -> Self {
         Self {
-            表示,
+            表示文字列,
             値,
-            変更,
+            新しい値から応答を作る,
             装飾値: スタイル::無指定,
         }
     }
@@ -24,13 +28,13 @@ impl<M> チェックボックス型<M> {
         self
     }
 
-    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 集配: &mut Vec<M>) {
+    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 発行した応答: &mut Vec<M>) {
         let mut 値 = self.値;
         let 文字 = self
             .装飾値
-            .文字へ適用する(egui::RichText::new(self.表示.clone()));
+            .文字へ適用する(egui::RichText::new(self.表示文字列.clone()));
         if ui.checkbox(&mut 値, 文字).changed() {
-            集配.push((self.変更)(値));
+            発行した応答.push((self.新しい値から応答を作る)(値));
         }
     }
 }
@@ -39,13 +43,15 @@ impl<M: 'static> チェックボックス型<M> {
     /// 応答型を別の型へ写す。ノードの `写す` から呼ばれる。
     pub(crate) fn 写す<N: 'static>(
         self,
-        変換: std::rc::Rc<dyn Fn(M) -> N>,
+        応答を変換する: std::rc::Rc<dyn Fn(M) -> N>,
     ) -> チェックボックス型<N> {
-        let 元の変更 = self.変更;
+        let 元の変更 = self.新しい値から応答を作る;
         チェックボックス型 {
-            表示: self.表示,
+            表示文字列: self.表示文字列,
             値: self.値,
-            変更: Box::new(move |値| 変換(元の変更(値))),
+            新しい値から応答を作る: Box::new(move |値| {
+                応答を変換する(元の変更(値))
+            }),
             装飾値: self.装飾値,
         }
     }

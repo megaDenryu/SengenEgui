@@ -7,5 +7,5 @@ mod text_field;
 
 pub use button::ボタン型;
 pub use checkbox::チェックボックス型;
-pub use text::文章型;
+pub use text::文字表示型;
 pub use text_field::一行テキスト入力型;

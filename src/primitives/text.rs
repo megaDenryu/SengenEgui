@@ -2,13 +2,13 @@
 
 use crate::style::スタイル;
 
-pub struct 文章型 {
+pub struct 文字表示型 {
     内容: String,
     装飾値: スタイル,
     折り返し禁止: bool,
 }
 
-impl 文章型 {
+impl 文字表示型 {
     pub(crate) fn 新規(内容: String) -> Self {
         Self {
             内容,

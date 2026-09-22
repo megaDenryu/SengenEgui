@@ -31,7 +31,7 @@ impl<M> ウィンドウ型<M> {
 }
 
 impl<M: Clone> ウィンドウ型<M> {
-    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 集配: &mut Vec<M>) {
+    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 発行した応答: &mut Vec<M>) {
         if !self.開いている {
             return;
         }
@@ -41,10 +41,10 @@ impl<M: Clone> ウィンドウ型<M> {
             窓 = 窓.open(&mut 開いたまま);
         }
         窓.show(ui.ctx(), |内側| {
-            子を順に描画する(&self.子一覧, 内側, 集配)
+            子を順に描画する(&self.子一覧, 内側, 発行した応答)
         });
         if !開いたまま && let Some(応答) = &self.閉じたら指定 {
-            集配.push(応答.clone());
+            発行した応答.push(応答.clone());
         }
     }
 }
@@ -52,13 +52,13 @@ impl<M: Clone> ウィンドウ型<M> {
 impl<M: 'static> ウィンドウ型<M> {
     pub(crate) fn 写す<N: 'static>(
         self,
-        変換: std::rc::Rc<dyn Fn(M) -> N>,
+        応答を変換する: std::rc::Rc<dyn Fn(M) -> N>,
     ) -> ウィンドウ型<N> {
         ウィンドウ型 {
             表題: self.表題,
             開いている: self.開いている,
-            閉じたら指定: self.閉じたら指定.map(&*変換),
-            子一覧: crate::tree::map::子一覧を写す(self.子一覧, &変換),
+            閉じたら指定: self.閉じたら指定.map(&*応答を変換する),
+            子一覧: crate::tree::map::子一覧を写す(self.子一覧, &応答を変換する),
         }
     }
 }

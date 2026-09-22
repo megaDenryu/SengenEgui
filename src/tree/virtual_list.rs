@@ -43,7 +43,7 @@ impl<M> 仮想列型<M> {
 }
 
 impl<M: Clone> 仮想列型<M> {
-    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 集配: &mut Vec<M>) {
+    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 発行した応答: &mut Vec<M>) {
         let mut 領域 = egui::ScrollArea::vertical()
             .id_salt(self.識別子.clone())
             .auto_shrink(false)
@@ -53,21 +53,24 @@ impl<M: Clone> 仮想列型<M> {
         }
         領域.show_rows(ui, self.行高さ, self.行数, |内側, 範囲| {
             for 行番号 in 範囲 {
-                (self.行を組む)(行番号).描画する(内側, 集配);
+                (self.行を組む)(行番号).描画する(内側, 発行した応答);
             }
         });
     }
 }
 
 impl<M: 'static> 仮想列型<M> {
-    pub(crate) fn 写す<N: 'static>(self, 変換: std::rc::Rc<dyn Fn(M) -> N>) -> 仮想列型<N> {
+    pub(crate) fn 写す<N: 'static>(
+        self,
+        応答を変換する: std::rc::Rc<dyn Fn(M) -> N>,
+    ) -> 仮想列型<N> {
         let 元の行を組む = self.行を組む;
         仮想列型 {
             識別子: self.識別子,
             行高さ: self.行高さ,
             行数: self.行数,
             行を組む: Box::new(move |行番号| {
-                元の行を組む(行番号).rcで写す(std::rc::Rc::clone(&変換))
+                元の行を組む(行番号).rcで写す(std::rc::Rc::clone(&応答を変換する))
             }),
             末尾追従指定: self.末尾追従指定,
             最大高さ指定: self.最大高さ指定,

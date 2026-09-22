@@ -3,7 +3,7 @@
 use crate::style::スタイル;
 
 pub struct ボタン型<M> {
-    表示: String,
+    表示文字列: String,
     応答: M,
     装飾値: スタイル,
     有効指定: bool,
@@ -11,9 +11,9 @@ pub struct ボタン型<M> {
 }
 
 impl<M> ボタン型<M> {
-    pub(crate) fn 新規(表示: String, 応答: M) -> Self {
+    pub(crate) fn 新規(表示文字列: String, 応答: M) -> Self {
         Self {
-            表示,
+            表示文字列,
             応答,
             装飾値: スタイル::無指定,
             有効指定: true,
@@ -39,10 +39,10 @@ impl<M> ボタン型<M> {
 }
 
 impl<M: Clone> ボタン型<M> {
-    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 集配: &mut Vec<M>) {
+    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 発行した応答: &mut Vec<M>) {
         let 文字 = self
             .装飾値
-            .文字へ適用する(egui::RichText::new(self.表示.clone()));
+            .文字へ適用する(egui::RichText::new(self.表示文字列.clone()));
         let mut 部品 = egui::Button::new(文字);
         if let Some(色) = self.装飾値.背景色 {
             部品 = 部品.fill(色);
@@ -51,17 +51,17 @@ impl<M: Clone> ボタン型<M> {
             部品 = 部品.min_size(egui::vec2(幅, 0.0));
         }
         if ui.add_enabled(self.有効指定, 部品).clicked() {
-            集配.push(self.応答.clone());
+            発行した応答.push(self.応答.clone());
         }
     }
 }
 
 impl<M> ボタン型<M> {
     /// 応答型を別の型へ写す。ノードの `写す` から呼ばれる。
-    pub(crate) fn 写す<N>(self, 変換: &dyn Fn(M) -> N) -> ボタン型<N> {
+    pub(crate) fn 写す<N>(self, 応答を変換する: &dyn Fn(M) -> N) -> ボタン型<N> {
         ボタン型 {
-            表示: self.表示,
-            応答: 変換(self.応答),
+            表示文字列: self.表示文字列,
+            応答: 応答を変換する(self.応答),
             装飾値: self.装飾値,
             有効指定: self.有効指定,
             最小幅指定: self.最小幅指定,
