@@ -25,9 +25,14 @@ impl<M: Clone> 見えない部品<M> {
 }
 
 impl<M: 'static> 見えない部品<M> {
-    pub(crate) fn 写す<N: 'static>(self, 変換: Rc<dyn Fn(M) -> N>) -> 見えない部品<N> {
+    pub(crate) fn 写す<N: 'static>(
+        self,
+        応答を変換する: Rc<dyn Fn(M) -> N>,
+    ) -> 見えない部品<N> {
         match self {
-            Self::キー操作(中身) => 見えない部品::キー操作(中身.写す(&*変換)),
+            Self::キー操作(中身) => {
+                見えない部品::キー操作(中身.写す(&*応答を変換する))
+            }
         }
     }
 }

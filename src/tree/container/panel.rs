@@ -60,7 +60,7 @@ impl<M: Clone> パネル型<M> {
         let 中身を描く =
             |内側: &mut egui::Ui| 子を順に描画する(&self.子一覧, 内側, 発行した応答);
         let 寸法 = self.既定の寸法指定.map(論理画素::eguiへ渡す値);
-        match self.位置.縁の種類へ写す() {
+        match self.位置.縁の種類へ変換する() {
             縁の種類::左右(側) => {
                 let mut パネル = egui::SidePanel::new(側, self.識別子.clone())
                     .resizable(self.大きさを変えられる指定);

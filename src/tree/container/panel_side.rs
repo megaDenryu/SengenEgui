@@ -23,7 +23,7 @@ pub(super) enum 縁の種類 {
 }
 
 impl パネルの位置 {
-    pub(super) fn 縁の種類へ写す(self) -> 縁の種類 {
+    pub(super) fn 縁の種類へ変換する(self) -> 縁の種類 {
         match self {
             Self::左 => 縁の種類::左右(egui::panel::Side::Left),
             Self::右 => 縁の種類::左右(egui::panel::Side::Right),

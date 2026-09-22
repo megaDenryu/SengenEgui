@@ -45,16 +45,16 @@ impl テーマ {
             明暗::濃色 => egui::Visuals::dark(),
             明暗::淡色 => egui::Visuals::light(),
         };
-        self.色を見た目へ写す(&mut 見た目);
-        self.角丸を見た目へ写す(&mut 見た目);
+        self.色を見た目へ反映する(&mut 見た目);
+        self.角丸を見た目へ反映する(&mut 見た目);
         文脈.set_visuals(見た目);
-        文脈.style_mut(|様式| self.間隔を様式へ写す(様式));
+        文脈.style_mut(|様式| self.間隔を様式へ反映する(様式));
         if let Some(倍率) = self.表示倍率 {
             文脈.set_zoom_factor(倍率);
         }
     }
 
-    fn 色を見た目へ写す(&self, 見た目: &mut egui::Visuals) {
+    fn 色を見た目へ反映する(&self, 見た目: &mut egui::Visuals) {
         if let Some(色) = self.強調色 {
             見た目.selection.bg_fill = 色;
             見た目.hyperlink_color = 色;
@@ -75,7 +75,7 @@ impl テーマ {
         }
     }
 
-    fn 角丸を見た目へ写す(&self, 見た目: &mut egui::Visuals) {
+    fn 角丸を見た目へ反映する(&self, 見た目: &mut egui::Visuals) {
         let Some(丸み) = self.部品の角丸 else {
             return;
         };
@@ -91,7 +91,7 @@ impl テーマ {
         }
     }
 
-    fn 間隔を様式へ写す(&self, 様式: &mut egui::Style) {
+    fn 間隔を様式へ反映する(&self, 様式: &mut egui::Style) {
         if let Some(間隔) = self.部品の間隔 {
             様式.spacing.item_spacing = 間隔.eguiへ渡す値();
         }

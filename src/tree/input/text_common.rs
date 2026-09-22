@@ -43,7 +43,7 @@ impl<M> テキスト入力の共通<M> {
     }
 
     /// 幅と案内文を egui の部品へ写す。一行・複数行それぞれの固有の指定は呼び出し側が先に写す。
-    fn 共通の指定を写す<'a>(&self, 部品: egui::TextEdit<'a>) -> egui::TextEdit<'a> {
+    fn 共通の指定を適用する<'a>(&self, 部品: egui::TextEdit<'a>) -> egui::TextEdit<'a> {
         let mut 部品 = 部品;
         if let Some(幅) = self.幅指定 {
             部品 = 部品.desired_width(幅.eguiへ渡す値());
@@ -64,7 +64,7 @@ impl<M> テキスト入力の共通<M> {
     ) -> egui::Response {
         let Some(識別子) = &self.確定時識別子 else {
             let mut 値 = self.値.clone();
-            let 反応 = ui.add(self.共通の指定を写す(部品を組む(&mut 値)));
+            let 反応 = ui.add(self.共通の指定を適用する(部品を組む(&mut 値)));
             if 反応.changed() {
                 発行した応答.push((self.新しい値から応答を作る)(値));
             }
@@ -74,7 +74,7 @@ impl<M> テキスト入力の共通<M> {
         let mut 下書き = ui
             .data_mut(|記憶| 記憶.get_temp::<String>(鍵))
             .unwrap_or_else(|| self.値.clone());
-        let 反応 = ui.add(self.共通の指定を写す(部品を組む(&mut 下書き)));
+        let 反応 = ui.add(self.共通の指定を適用する(部品を組む(&mut 下書き)));
         if 反応.changed() {
             ui.data_mut(|記憶| 記憶.insert_temp(鍵, 下書き.clone()));
         }

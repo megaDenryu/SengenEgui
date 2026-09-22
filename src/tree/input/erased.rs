@@ -15,14 +15,12 @@ pub(crate) struct 描画の結果<M> {
 
 /// 型を消した入力型とは、数の型を閉包へ閉じ込めた入力の部品のことである。
 pub struct 型を消した入力型<M> {
-    描画する手続き: 描画する手続き<M>,
+    描画する: 描画する手続き<M>,
 }
 
 impl<M> 型を消した入力型<M> {
-    pub(crate) fn 新規(描画する手続き: 描画する手続き<M>) -> Self {
-        Self {
-            描画する手続き
-        }
+    pub(crate) fn 新規(描画する: 描画する手続き<M>) -> Self {
+        Self { 描画する }
     }
 
     pub(crate) fn 描画する(
@@ -30,7 +28,7 @@ impl<M> 型を消した入力型<M> {
         ui: &mut egui::Ui,
         発行した応答: &mut Vec<M>,
     ) -> egui::Response {
-        let 結果 = (self.描画する手続き)(ui);
+        let 結果 = (self.描画する)(ui);
         if let Some(応答) = 結果.発行する応答 {
             発行した応答.push(応答);
         }
@@ -43,10 +41,10 @@ impl<M: 'static> 型を消した入力型<M> {
         self,
         応答を変換する: Rc<dyn Fn(M) -> N>,
     ) -> 型を消した入力型<N> {
-        let 元の手続き = self.描画する手続き;
+        let 元の描画する = self.描画する;
         型を消した入力型 {
-            描画する手続き: Box::new(move |ui| {
-                let 結果 = 元の手続き(ui);
+            描画する: Box::new(move |ui| {
+                let 結果 = 元の描画する(ui);
                 描画の結果 {
                     反応: 結果.反応,
                     発行する応答: 結果.発行する応答.map(&*応答を変換する),
