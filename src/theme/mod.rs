@@ -1,9 +1,16 @@
 //! テーマ。画面全体の見た目（明暗・色・表示倍率・部品の間隔・ボタンの内余白・部品の角丸）を
 //! 1箇所で決める。適用しなければ egui の既定（OSの明暗設定への追従）のまま動く。
-//! 色の項目は未指定なら基調の既定色を使う。egui の濃色の既定は本文が灰色140で暗いため、
-//! 読みやすさを求める画面は `文字色` を指定する。
+//! 色は4つ（地の色・部品の面の色・文字色・強調色）だけを指定させ、egui の見た目が要る残りの色
+//! （マウスを乗せた面・押した面・線・入力欄の窪んだ面・格子の縞・選択の縁・文字カーソル等）は
+//! 指定された色どうしを混ぜて導く。指定の色と egui の既定の無彩色が画面の中で混ざらないためである。
+//! 導出の元になる色が未指定の項目は egui の既定色のまま残す。導出の規則は palette.rs にある。
+
+mod assign;
+mod mix;
+mod palette;
 
 use crate::measure::{拡大率, 縦横の論理画素, 角丸の画素};
+use palette::配色;
 
 /// 明暗とは、画面全体の基調の区別のことである。
 #[derive(Clone, Copy)]
@@ -20,13 +27,13 @@ pub enum 明暗 {
 pub struct テーマ {
     /// 画面全体の明暗の基調。
     pub 基調: 明暗,
-    /// 選択・リンク等の強調に使う色。
+    /// 選択・リンク等の強調に使う色。選択の縁と文字カーソルの色もここから導く。
     pub 強調色: Option<egui::Color32>,
-    /// 画面と浮きウィンドウの背景の色。
+    /// 画面と浮きウィンドウの背景の色。線・入力欄の窪んだ面・格子の縞もここから導く。
     pub 地の色: Option<egui::Color32>,
-    /// 装飾で色を指定していない文字と、ボタン等の部品の文字の色。
+    /// 装飾で色を指定していない文字と部品の文字の色。他の色を明るくする（淡色では暗くする）方向でもある。
     pub 文字色: Option<egui::Color32>,
-    /// ボタン・チェックボックス等の、触っていないときの面の色。
+    /// ボタン等の触っていないときの面の色。マウスを乗せた面と押した面もここから導く。
     pub 部品の面の色: Option<egui::Color32>,
     /// 画面全体の拡大率。未指定なら等倍。
     pub 表示倍率: Option<拡大率>,
@@ -40,6 +47,7 @@ pub struct テーマ {
 
 impl テーマ {
     /// テーマを egui の文脈へ適用する。起動時に1回呼ぶ。
+    /// 指定された色から導いた色も含めて、egui の見た目の全体へ書く。
     pub fn 適用する(&self, 文脈: &egui::Context) {
         let mut 見た目 = match self.基調 {
             明暗::濃色 => egui::Visuals::dark(),
@@ -55,24 +63,14 @@ impl テーマ {
     }
 
     fn 色を見た目へ反映する(&self, 見た目: &mut egui::Visuals) {
-        if let Some(色) = self.強調色 {
-            見た目.selection.bg_fill = 色;
-            見た目.hyperlink_color = 色;
-        }
-        if let Some(色) = self.地の色 {
-            見た目.panel_fill = 色;
-            見た目.window_fill = 色;
-            見た目.widgets.noninteractive.bg_fill = 色;
-            見た目.widgets.noninteractive.weak_bg_fill = 色;
-        }
-        if let Some(色) = self.文字色 {
-            見た目.widgets.noninteractive.fg_stroke.color = 色;
-            見た目.widgets.inactive.fg_stroke.color = 色;
-        }
-        if let Some(色) = self.部品の面の色 {
-            見た目.widgets.inactive.bg_fill = 色;
-            見た目.widgets.inactive.weak_bg_fill = 色;
-        }
+        let 色の組 = 配色 {
+            基調: self.基調,
+            強調色: self.強調色,
+            地の色: self.地の色,
+            文字色: self.文字色,
+            部品の面の色: self.部品の面の色,
+        };
+        色の組.見た目へ割り当てる(見た目);
     }
 
     fn 角丸を見た目へ反映する(&self, 見た目: &mut egui::Visuals) {
