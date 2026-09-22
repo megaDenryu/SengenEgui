@@ -16,3 +16,7 @@ egui = "0.32"
 unwrap_used = "deny"
 expect_used = "deny"
 as_conversions = "deny"
+
+# 見本帳（examples/gallery）の起動にだけ使う。通常の依存は egui のみのままにする。
+[dev-dependencies]
+eframe = "0.32"
