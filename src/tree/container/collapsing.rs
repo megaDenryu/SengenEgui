@@ -1,8 +1,11 @@
 //! 折り畳み見出し。開閉状態は egui が識別子ごとに内部保持する
 //! （スクロール位置と同じ扱い。アプリ状態で制御したい場合は条件ノードを使う）。
 
+use std::rc::Rc;
+
 use crate::tree::{ノード, 子を順に描画する};
 
+/// 折り畳み見出し型とは、見出しを押すと中身の表示を開閉する容器の記述のことである。
 pub struct 折り畳み見出し型<M> {
     見出し: String,
     識別子指定: Option<String>,
@@ -26,6 +29,7 @@ impl<M> 折り畳み見出し型<M> {
         self
     }
 
+    /// 最初のフレームで開いた状態にする。
     pub fn 既定で開く(mut self) -> Self {
         self.既定で開く指定 = true;
         self
@@ -33,22 +37,28 @@ impl<M> 折り畳み見出し型<M> {
 }
 
 impl<M: Clone> 折り畳み見出し型<M> {
-    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 発行した応答: &mut Vec<M>) {
+    pub(crate) fn 描画する(
+        &self,
+        ui: &mut egui::Ui,
+        発行した応答: &mut Vec<M>,
+    ) -> egui::Response {
         let mut 見出し =
             egui::CollapsingHeader::new(self.見出し.clone()).default_open(self.既定で開く指定);
         if let Some(識別子) = &self.識別子指定 {
             見出し = 見出し.id_salt(識別子.clone());
         }
-        見出し.show(ui, |内側| {
-            子を順に描画する(&self.子一覧, 内側, 発行した応答)
-        });
+        見出し
+            .show(ui, |内側| {
+                子を順に描画する(&self.子一覧, 内側, 発行した応答)
+            })
+            .header_response
     }
 }
 
 impl<M: 'static> 折り畳み見出し型<M> {
     pub(crate) fn 写す<N: 'static>(
         self,
-        応答を変換する: std::rc::Rc<dyn Fn(M) -> N>,
+        応答を変換する: Rc<dyn Fn(M) -> N>,
     ) -> 折り畳み見出し型<N> {
         折り畳み見出し型 {
             見出し: self.見出し,

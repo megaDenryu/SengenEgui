@@ -1,22 +1,40 @@
 //! スタイルの型。全項目が省略可能で、未指定の項目は egui の既定値を使う。
 
+use crate::measure::論理画素;
+
 /// スタイルとは、ノードへ適用する装飾の集合のことである。
 /// 利用側は `pub const` の名前付き定数として専用ファイルへ集約し、
 /// 構造側からは `.装飾(定数名)` で参照する。
 #[derive(Clone, Copy, Default)]
 pub struct スタイル {
-    pub 文字サイズ: Option<f32>,
+    /// 文字の大きさ。
+    pub 文字サイズ: Option<論理画素>,
+    /// 文字の色。
     pub 文字色: Option<egui::Color32>,
+    /// 文字を太くするか。
     pub 太字: Option<bool>,
+    /// 文字を等幅の書体にするか。
     pub 等幅: Option<bool>,
+    /// 文字を斜めにするか。
+    pub 斜体: Option<bool>,
+    /// 文字に下線を引くか。
+    pub 下線: Option<bool>,
+    /// 文字に取り消し線を引くか。
+    pub 取り消し線: Option<bool>,
+    /// 文字を淡くして目立たなくするか。
+    pub 弱い: Option<bool>,
     /// コンテナでは枠の塗り、ボタンでは面の塗りになる。
     pub 背景色: Option<egui::Color32>,
-    pub 内余白: Option<i8>,
-    pub 外余白: Option<i8>,
-    pub 角丸: Option<u8>,
-    /// 枠線を引くときの色。太さ未指定なら1.0で引く。
+    /// 枠の内側の余白。
+    pub 内余白: Option<論理画素>,
+    /// 枠の外側の余白。
+    pub 外余白: Option<論理画素>,
+    /// 枠の角の丸み。
+    pub 角丸: Option<論理画素>,
+    /// 枠線を引くときの色。太さ未指定なら1論理画素で引く。
     pub 枠線色: Option<egui::Color32>,
-    pub 枠線太さ: Option<f32>,
+    /// 枠線の太さ。
+    pub 枠線太さ: Option<論理画素>,
 }
 
 impl スタイル {
@@ -26,6 +44,10 @@ impl スタイル {
         文字色: None,
         太字: None,
         等幅: None,
+        斜体: None,
+        下線: None,
+        取り消し線: None,
+        弱い: None,
         背景色: None,
         内余白: None,
         外余白: None,
@@ -42,6 +64,10 @@ impl スタイル {
             文字色: 上書き.文字色.or(self.文字色),
             太字: 上書き.太字.or(self.太字),
             等幅: 上書き.等幅.or(self.等幅),
+            斜体: 上書き.斜体.or(self.斜体),
+            下線: 上書き.下線.or(self.下線),
+            取り消し線: 上書き.取り消し線.or(self.取り消し線),
+            弱い: 上書き.弱い.or(self.弱い),
             背景色: 上書き.背景色.or(self.背景色),
             内余白: 上書き.内余白.or(self.内余白),
             外余白: 上書き.外余白.or(self.外余白),

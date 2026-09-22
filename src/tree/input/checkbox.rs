@@ -1,7 +1,10 @@
 //! チェックボックスの記述と描画。現在値はこのフレームの値を渡し、変更は新しい値から応答を作って発行する。
 
+use std::rc::Rc;
+
 use crate::style::スタイル;
 
+/// チェックボックス型とは、真偽の値を切り替える部品の記述のことである。
 pub struct チェックボックス型<M> {
     表示文字列: String,
     値: bool,
@@ -23,19 +26,26 @@ impl<M> チェックボックス型<M> {
         }
     }
 
+    /// 装飾を適用する。装飾は名前付き定数として構造の外で定義する（lib.rs 方針3）。
     pub fn 装飾(mut self, 指定: スタイル) -> Self {
         self.装飾値 = 指定;
         self
     }
 
-    pub(crate) fn 描画する(&self, ui: &mut egui::Ui, 発行した応答: &mut Vec<M>) {
+    pub(crate) fn 描画する(
+        &self,
+        ui: &mut egui::Ui,
+        発行した応答: &mut Vec<M>,
+    ) -> egui::Response {
         let mut 値 = self.値;
         let 文字 = self
             .装飾値
             .文字へ適用する(egui::RichText::new(self.表示文字列.clone()));
-        if ui.checkbox(&mut 値, 文字).changed() {
+        let 反応 = ui.checkbox(&mut 値, 文字);
+        if 反応.changed() {
             発行した応答.push((self.新しい値から応答を作る)(値));
         }
+        反応
     }
 }
 
@@ -43,7 +53,7 @@ impl<M: 'static> チェックボックス型<M> {
     /// 応答型を別の型へ写す。ノードの `写す` から呼ばれる。
     pub(crate) fn 写す<N: 'static>(
         self,
-        応答を変換する: std::rc::Rc<dyn Fn(M) -> N>,
+        応答を変換する: Rc<dyn Fn(M) -> N>,
     ) -> チェックボックス型<N> {
         let 元の変更 = self.新しい値から応答を作る;
         チェックボックス型 {
