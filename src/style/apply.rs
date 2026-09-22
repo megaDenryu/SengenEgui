@@ -64,13 +64,13 @@ impl スタイル {
             枠 = 枠.fill(色);
         }
         if let Some(余白) = self.内余白 {
-            枠 = 枠.inner_margin(egui::Margin::from(余白));
+            枠 = 枠.inner_margin(egui::Margin::same(余白.eguiへ渡す値()));
         }
         if let Some(余白) = self.外余白 {
-            枠 = 枠.outer_margin(egui::Margin::from(余白));
+            枠 = 枠.outer_margin(egui::Margin::same(余白.eguiへ渡す値()));
         }
         if let Some(丸み) = self.角丸 {
-            枠 = 枠.corner_radius(egui::CornerRadius::from(丸み));
+            枠 = 枠.corner_radius(egui::CornerRadius::same(丸み.eguiへ渡す値()));
         }
         if let Some(色) = self.枠線色 {
             let 太さ = self.枠線太さ.unwrap_or(画素(1.0));

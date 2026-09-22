@@ -52,18 +52,6 @@ impl std::ops::Mul<f32> for 論理画素 {
     }
 }
 
-impl From<論理画素> for egui::Margin {
-    fn from(値: 論理画素) -> Self {
-        egui::Margin::from(値.eguiへ渡す値())
-    }
-}
-
-impl From<論理画素> for egui::CornerRadius {
-    fn from(値: 論理画素) -> Self {
-        egui::CornerRadius::from(値.eguiへ渡す値())
-    }
-}
-
 impl std::fmt::Display for 論理画素 {
     fn fmt(&self, 出力: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(出力, "{}px", self.0)

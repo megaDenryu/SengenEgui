@@ -3,7 +3,7 @@
 //! 色の項目は未指定なら基調の既定色を使う。egui の濃色の既定は本文が灰色140で暗いため、
 //! 読みやすさを求める画面は `文字色` を指定する。
 
-use crate::measure::{縦横の論理画素, 論理画素};
+use crate::measure::{拡大率, 縦横の論理画素, 角丸の画素};
 
 /// 明暗とは、画面全体の基調の区別のことである。
 #[derive(Clone, Copy)]
@@ -28,14 +28,14 @@ pub struct テーマ {
     pub 文字色: Option<egui::Color32>,
     /// ボタン・チェックボックス等の、触っていないときの面の色。
     pub 部品の面の色: Option<egui::Color32>,
-    /// 画面全体の拡大率。1.0が等倍。
-    pub 表示倍率: Option<f32>,
+    /// 画面全体の拡大率。未指定なら等倍。
+    pub 表示倍率: Option<拡大率>,
     /// 隣り合う部品の間に空ける横と縦の距離。
     pub 部品の間隔: Option<縦横の論理画素>,
     /// ボタンの文字と縁の間の横と縦の余白。
     pub ボタンの内余白: Option<縦横の論理画素>,
     /// ボタン等の部品の角の丸み。
-    pub 部品の角丸: Option<論理画素>,
+    pub 部品の角丸: Option<角丸の画素>,
 }
 
 impl テーマ {
@@ -50,7 +50,7 @@ impl テーマ {
         文脈.set_visuals(見た目);
         文脈.style_mut(|様式| self.間隔を様式へ反映する(様式));
         if let Some(倍率) = self.表示倍率 {
-            文脈.set_zoom_factor(倍率);
+            文脈.set_zoom_factor(倍率.eguiへ渡す値());
         }
     }
 
@@ -79,7 +79,7 @@ impl テーマ {
         let Some(丸み) = self.部品の角丸 else {
             return;
         };
-        let 丸み = egui::CornerRadius::from(丸み);
+        let 丸み = egui::CornerRadius::same(丸み.eguiへ渡す値());
         for 状態 in [
             &mut 見た目.widgets.noninteractive,
             &mut 見た目.widgets.inactive,
