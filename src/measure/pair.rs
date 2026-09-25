@@ -17,6 +17,11 @@ impl 縦横の論理画素 {
         Self { 横, 縦 }
     }
 
+    /// egui の2次元ベクトルから組を作る。egui から受け取る境界でだけ使う。
+    pub(crate) const fn eguiの大きさから作る(大きさ: egui::Vec2) -> Self {
+        Self::生成する(論理画素::生成する(大きさ.x), 論理画素::生成する(大きさ.y))
+    }
+
     /// egui の2次元ベクトルへ変換する。この口以外で生の値へ戻さない。
     pub const fn eguiへ渡す値(self) -> egui::Vec2 {
         egui::vec2(self.横.eguiへ渡す値(), self.縦.eguiへ渡す値())

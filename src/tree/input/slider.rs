@@ -1,34 +1,43 @@
 //! スライダー。範囲内の数をつまみで変える。数の型は egui の `Numeric` を満たす型で汎用である。
 //! ノードへ変換する時点で数の型を閉包へ閉じ込める（`erased` 参照）。
+//! 値が変わるたびに発する応答のほかに、操作を終えたとき（ドラッグを放したとき・軌道を押して値を変えたとき）
+//! だけ発する応答を持てる。変更のたびには軽い処理を、終えたときに重い処理を行う利用のためである。
 
 use std::ops::RangeInclusive;
 
 use crate::measure::論理画素;
 use crate::tree::input::erased::{型を消した入力型, 描画の結果};
+use crate::tree::input::slider_track::{軌道の幅, 軌道の横に並ぶもの};
 use crate::tree::input::入力の部品;
 use crate::tree::ノード;
+
+type 値から応答を作る手続き<M, 数> = Box<dyn Fn(数) -> M>;
 
 /// スライダー型とは、範囲内の数をつまみで編集する部品の記述のことである。
 pub struct スライダー型<M, 数: egui::emath::Numeric> {
     値: 数,
     範囲: RangeInclusive<数>,
-    新しい値から応答を作る: Box<dyn Fn(数) -> M>,
+    新しい値から応答を作る: 値から応答を作る手続き<M, 数>,
+    操作を終えた値から応答を作る: Option<値から応答を作る手続き<M, 数>>,
     添える文字: Option<String>,
-    幅指定: Option<論理画素>,
+    軌道の幅: 軌道の幅,
+    数値を表示する: bool,
 }
 
 impl<M, 数: egui::emath::Numeric> スライダー型<M, 数> {
     pub(crate) fn 新規(
         値: 数,
         範囲: RangeInclusive<数>,
-        新しい値から応答を作る: Box<dyn Fn(数) -> M>,
+        新しい値から応答を作る: 値から応答を作る手続き<M, 数>,
     ) -> Self {
         Self {
             値,
             範囲,
             新しい値から応答を作る,
+            操作を終えた値から応答を作る: None,
             添える文字: None,
-            幅指定: None,
+            軌道の幅: 軌道の幅::既定,
+            数値を表示する: true,
         }
     }
 
@@ -38,27 +47,58 @@ impl<M, 数: egui::emath::Numeric> スライダー型<M, 数> {
         self
     }
 
-    /// つまみが動く軌道の幅を指定する。
+    /// つまみが動く軌道の幅を指定する。`幅いっぱい` とは後に書いた方が効く。
     pub fn 幅(mut self, 幅: 論理画素) -> Self {
-        self.幅指定 = Some(幅);
+        self.軌道の幅 = 軌道の幅::指定(幅);
+        self
+    }
+
+    /// 軌道を、使える幅から数値の欄と添える文字の分を差し引いた残りの全部へ広げる。再生位置の帯のように横いっぱいに使う。
+    pub fn 幅いっぱい(mut self) -> Self {
+        self.軌道の幅 = 軌道の幅::使える幅いっぱい;
+        self
+    }
+
+    /// 軌道の右の数値の欄を出さない。
+    pub fn 数値を隠す(mut self) -> Self {
+        self.数値を表示する = false;
+        self
+    }
+
+    /// 操作を終えたとき（ドラッグを放したとき、または軌道を押して値を変えたとき）に、その時点の値から作った応答を発する。
+    /// 値が変わるたびの応答も今までどおり発し、同じ回に両方が出るときは変わった応答が先に並ぶ。
+    pub fn 操作を終えたら発する(
+        mut self,
+        値から応答を作る: impl Fn(数) -> M + 'static,
+    ) -> Self {
+        self.操作を終えた値から応答を作る = Some(Box::new(値から応答を作る));
         self
     }
 
     fn 描画する(&self, ui: &mut egui::Ui) -> 描画の結果<M> {
         let mut 値 = self.値;
-        let mut 部品 = egui::Slider::new(&mut 値, self.範囲.clone());
+        let mut 部品 =
+            egui::Slider::new(&mut 値, self.範囲.clone()).show_value(self.数値を表示する);
         if let Some(文字) = &self.添える文字 {
             部品 = 部品.text(文字.clone());
         }
-        if let Some(幅) = self.幅指定 {
-            ui.spacing_mut().slider_width = 幅.eguiへ渡す値();
-        }
+        let 横に並ぶもの = 軌道の横に並ぶもの {
+            数値を表示する: self.数値を表示する,
+            添える文字: self.添える文字.as_deref(),
+        };
+        self.軌道の幅.間隔の設定へ書く(ui, 横に並ぶもの);
         let 反応 = ui.add(部品);
+        let mut 発行する応答 = Vec::new();
+        if 反応.changed() {
+            発行する応答.push((self.新しい値から応答を作る)(値));
+        }
+        if let Some(作る) = &self.操作を終えた値から応答を作る
+            && (反応.drag_stopped() || 反応.clicked())
+        {
+            発行する応答.push(作る(値));
+        }
         描画の結果 {
-            発行する応答: 反応
-                .changed()
-                .then(|| (self.新しい値から応答を作る)(値)),
-            反応,
+            発行する応答, 反応
         }
     }
 }

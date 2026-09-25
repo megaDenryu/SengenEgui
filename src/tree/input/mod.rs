@@ -15,6 +15,7 @@ mod radio;
 mod range_frame;
 mod selectable;
 mod slider;
+mod slider_track;
 mod text_common;
 mod text_field;
 

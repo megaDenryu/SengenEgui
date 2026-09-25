@@ -47,7 +47,9 @@ impl スタイル {
         if !self.枠が要る() {
             return 中身(ui);
         }
-        self.枠を組む().show(ui, 中身).response
+        self.枠の指定を重ねる(egui::Frame::new())
+            .show(ui, 中身)
+            .response
     }
 
     fn 枠が要る(&self) -> bool {
@@ -58,8 +60,9 @@ impl スタイル {
             || self.枠線色.is_some()
     }
 
-    fn 枠を組む(&self) -> egui::Frame {
-        let mut 枠 = egui::Frame::new();
+    /// 元の枠へ、枠系の指定のある項目だけを上書きした枠を返す。指定の無い項目は元の枠のまま残す。
+    pub(crate) fn 枠の指定を重ねる(&self, 元の枠: egui::Frame) -> egui::Frame {
+        let mut 枠 = 元の枠;
         if let Some(色) = self.背景色 {
             枠 = 枠.fill(色);
         }

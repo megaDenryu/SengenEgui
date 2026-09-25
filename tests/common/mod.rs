@@ -5,6 +5,7 @@
 
 pub mod drag;
 pub mod image;
+pub mod output;
 pub mod range_frame;
 
 use sengen_egui::ノード;

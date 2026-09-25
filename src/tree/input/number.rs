@@ -15,6 +15,7 @@ pub struct 数値入力型<M, 数: egui::emath::Numeric> {
     刻み指定: Option<数>,
     前置き指定: Option<String>,
     後置き指定: Option<String>,
+    小数点以下の桁数指定: Option<usize>,
 }
 
 impl<M, 数: egui::emath::Numeric> 数値入力型<M, 数> {
@@ -30,6 +31,7 @@ impl<M, 数: egui::emath::Numeric> 数値入力型<M, 数> {
             刻み指定: None,
             前置き指定: None,
             後置き指定: None,
+            小数点以下の桁数指定: None,
         }
     }
 
@@ -51,6 +53,12 @@ impl<M, 数: egui::emath::Numeric> 数値入力型<M, 数> {
         self
     }
 
+    /// 小数点以下を常にこの桁数で表示する。秒を 1.50 のように揃えて見せるときに使う。
+    pub fn 小数点以下の桁数(mut self, 桁数: usize) -> Self {
+        self.小数点以下の桁数指定 = Some(桁数);
+        self
+    }
+
     fn 描画する(&self, ui: &mut egui::Ui) -> 描画の結果<M> {
         let mut 値 = self.値;
         let mut 部品 = egui::DragValue::new(&mut 値).range(self.範囲.clone());
@@ -63,11 +71,16 @@ impl<M, 数: egui::emath::Numeric> 数値入力型<M, 数> {
         if let Some(文字) = &self.後置き指定 {
             部品 = 部品.suffix(文字);
         }
+        if let Some(桁数) = self.小数点以下の桁数指定 {
+            部品 = 部品.fixed_decimals(桁数);
+        }
         let 反応 = ui.add(部品);
         描画の結果 {
             発行する応答: 反応
                 .changed()
-                .then(|| (self.新しい値から応答を作る)(値)),
+                .then(|| (self.新しい値から応答を作る)(値))
+                .into_iter()
+                .collect(),
             反応,
         }
     }
