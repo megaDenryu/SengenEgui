@@ -81,11 +81,12 @@ APIの正本は rustdoc である。`cargo doc --open` で読む。公開APIに�
 
 ## 利用形態
 
-Gitサブモジュールとして利用元リポジトリの Cargo ワークスペースへ埋め、メンバーとして登録する。
-単独クローンでも `cargo test` が通る自己完結の定義を保つ。
+他のリポジトリで使うときの導入・画面の書き方・足りない口の足し方は [docs/他のリポジトリで使う.md](docs/他のリポジトリで使う.md) が1通りに定める。要点は次の3つである。
 
-利用元の eframe と本リポジトリの egui は同じマイナー版に揃える。版を上げるときは本リポジトリの
-egui を先に上げてコミットし、利用元の eframe とサブモジュールのポインタを同じ変更の中で上げる
-（ずれると型不一致でビルドが落ちて検出される）。
+- 利用する側は Cargo の git 依存を `rev` で固定して取り込み、SengenEgui を書き足すPCでだけ、親ディレクトリの `.cargo/config.toml` の `[patch]` で手元の複製へ差し替える
+- 利用する側の eframe（または egui）は、本リポジトリの egui と同じマイナー版に揃える
+- 口が足りないときは、利用する側で素の egui を呼んで回避せず、本リポジトリへ口を足してから利用する側の `rev` を上げる
+
+単独クローンでも `cargo test` が通る自己完結の定義を保つ。GameScriptingTheory は導入の経緯から Git サブモジュールとして埋めており、上の文書の手順の対象外である。
 
 利用例: [GameScriptingTheory](https://github.com/megaDenryu/GameScriptingTheory) の `crates/devtool`（開発ツールGUI）。
