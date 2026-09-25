@@ -4,6 +4,8 @@
 #![allow(dead_code)]
 
 pub mod drag;
+pub mod font_measure;
+pub mod glyph;
 pub mod image;
 pub mod output;
 pub mod overlay;

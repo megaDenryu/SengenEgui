@@ -3,7 +3,7 @@
 
 use std::path::Path;
 
-use super::フォントを使えなかった理由;
+use super::{フォントを使えなかった理由, 字形の縦の補正};
 
 /// egui のフォントの一覧へ登録するときの名前。egui は同じ名前のフォントを2回目以降は足さない。
 const 登録する名前: &str = "日本語の字形";
@@ -31,8 +31,12 @@ impl フォントのバイト列 {
         }
     }
 
-    /// egui の文字の族（通常と等幅）の最後へ足す。既定のフォントに無い字形だけがこのフォントで描かれる。
-    pub(super) fn 日本語の字形として足す(self, eguiの本体: &egui::Context) {
+    /// egui の文字の族（通常と等幅）の最後へ、縦の補正を付けて足す。既定のフォントに無い字形だけがこのフォントで描かれる。
+    pub(super) fn 日本語の字形として足す(
+        self,
+        eguiの本体: &egui::Context,
+        縦の補正: 字形の縦の補正,
+    ) {
         let 足す族 = [egui::FontFamily::Proportional, egui::FontFamily::Monospace].map(|族| {
             egui::epaint::text::InsertFontFamily {
                 family: 族,
@@ -41,7 +45,7 @@ impl フォントのバイト列 {
         });
         eguiの本体.add_font(egui::epaint::text::FontInsert::new(
             登録する名前,
-            egui::FontData::from_owned(self.0),
+            egui::FontData::from_owned(self.0).tweak(縦の補正.eguiのフォントの調整へ変える()),
             足す族.to_vec(),
         ));
     }
