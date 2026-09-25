@@ -17,8 +17,6 @@ pub use failure::{
 };
 pub use placement::フォントの置き場所と補正;
 
-const 補正無し: 字形の縦の補正 = 字形の縦の補正::無し;
-
 /// OS に入っている日本語フォントの置き場所と縦の補正。前から順に試す。
 /// Windows の游ゴシック・メイリオ・MS ゴシック、Linux の Noto Sans CJK、macOS のヒラギノ角ゴシックの順である。
 /// 補正量は Windows の3つだけを測った（測り方は `correction` の説明）。Linux と macOS のフォントは測っておらず補正しない。
@@ -31,16 +29,19 @@ const 標準で入っている置き場所一覧: [(&str, 字形の縦の補正)
         "C:/Windows/Fonts/meiryo.ttc",
         字形の縦の補正::字の大きさに対する比から作る(0.04),
     ),
-    ("C:/Windows/Fonts/msgothic.ttc", 補正無し),
+    ("C:/Windows/Fonts/msgothic.ttc", 字形の縦の補正::無し),
     (
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        補正無し,
+        字形の縦の補正::無し,
     ),
     (
         "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
-        補正無し,
+        字形の縦の補正::無し,
     ),
-    ("/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc", 補正無し),
+    (
+        "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
+        字形の縦の補正::無し,
+    ),
 ];
 
 /// 日本語フォントの候補とは、日本語の字形を持つフォントのファイルの置き場所と縦の補正を、試す順に並べた一覧のことである。
@@ -62,11 +63,9 @@ impl 日本語フォントの候補 {
     pub fn 置き場所の一覧から作る(
         置き場所一覧: impl IntoIterator<Item = impl Into<PathBuf>>,
     ) -> Self {
-        Self::補正付きの一覧から作る(
-            置き場所一覧.into_iter().map(|置き場所| {
-                フォントの置き場所と補正::生成する(置き場所, 補正無し)
-            }),
-        )
+        Self::補正付きの一覧から作る(置き場所一覧.into_iter().map(|置き場所| {
+            フォントの置き場所と補正::生成する(置き場所, 字形の縦の補正::無し)
+        }))
     }
 
     /// 利用する側が選んだフォントの置き場所と縦の補正を、試す順に並べて候補にする。補正量を利用する側で決めるときに使う。
