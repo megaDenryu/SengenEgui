@@ -3,14 +3,14 @@
 //! 部品の木は毎フレーム組み直して捨てるが、テクスチャは組み直さない。登録には egui の本体
 //! （`egui::Context`）が要り、登録と差し替えは描画の外（起動の部分、または描画の後に応答を
 //! 状態へ適用する段）で行う。描画の中では、保持したテクスチャを `画像(&テクスチャ)` のように部品へ渡すだけである。
-//! 借りられない場所（所有した値だけを持ち込める閉包）へは、`テクスチャの持ち手` を複製して持ち込む。
+//! 借りられない場所（所有した値だけを持ち込める閉包）へは、`登録したテクスチャの参照` を複製して持ち込む。
 
-mod handle;
 mod pixel_size;
 mod pixels;
+mod registered_reference;
 mod replaceable;
 
-pub use handle::テクスチャの持ち手;
 pub use pixel_size::画素数の寸法;
 pub use pixels::{画素の並び, 画素の並びの不正};
+pub use registered_reference::登録したテクスチャの参照;
 pub use replaceable::{差し替えられるテクスチャ, 拡大縮小の仕方};
