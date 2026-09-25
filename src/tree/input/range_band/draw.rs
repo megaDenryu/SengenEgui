@@ -22,17 +22,17 @@ impl<M> 区間の帯型<M> {
         区間の帯の描き方::装飾と見た目から作る(self.装飾値, ui.visuals()).描く(
             ui.painter(),
             &配置,
-            self.描く値,
+            self.今の値,
         );
         if let Some(乗っている位置) = 反応.hover_pos()
-            && let Some(始め) = self.描く値.掴み始めを判定する(&配置, 乗っている位置)
+            && let Some(始め) = self.今の値.掴み始めを判定する(&配置, 乗っている位置)
         {
             ui.ctx().set_cursor_icon(始め.掴んだもの.カーソルの形());
         }
         let ドラッグ = 区間の帯のドラッグ {
             反応: &反応,
             配置,
-            描く値: self.描く値,
+            今の値: self.今の値,
         };
         発行した応答.extend(
             ドラッグ

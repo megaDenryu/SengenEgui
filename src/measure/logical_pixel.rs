@@ -32,6 +32,11 @@ impl 論理画素 {
         f64::from(self.0)
     }
 
+    /// 向きを捨てた長さ。2つの位置の間の距離を求めるときに使う。
+    pub fn 絶対値(self) -> Self {
+        Self(self.0.abs())
+    }
+
     /// 2つの論理画素のうち大きい方を返す。
     pub fn 大きい方(self, 相手: Self) -> Self {
         Self(self.0.max(相手.0))

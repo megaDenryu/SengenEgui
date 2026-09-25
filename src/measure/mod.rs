@@ -1,6 +1,7 @@
 //! 寸法と割合の単位付きの数値。裸の f32 を寸法として公開APIへ出さないための層である。
 //! 生の f32 へ戻すのは egui へ渡す境界だけであり、その口は `eguiへ渡す値` と名前で明示する。
 
+mod band_range;
 mod band_value;
 mod integer_pixel;
 mod logical_pixel;
@@ -10,9 +11,9 @@ mod ratio_difference;
 mod ratio_rect;
 mod zoom;
 
-pub use band_value::{
-    帯の値, 帯の値の差, 帯の全体の範囲, 帯の全体の範囲の不正
-};
+pub(crate) use band_range::範囲との位置関係;
+pub use band_range::{帯の全体の範囲, 帯の全体の範囲の不正};
+pub use band_value::{帯の値, 帯の値の差};
 pub use integer_pixel::{
     余白の画素, 余白画素, 整数画素の範囲外, 角丸の画素, 角丸画素
 };
