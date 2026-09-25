@@ -8,6 +8,7 @@
 mod drag;
 mod draw;
 mod hit;
+mod hold;
 mod layout;
 mod operation;
 mod paint;
