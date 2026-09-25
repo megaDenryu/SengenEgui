@@ -1,47 +1,90 @@
-//! テーマを適用した入力欄の範囲選択の地が、強調色でなく、強調色を地の色の方へ寄せた色で塗られることを、
-//! 描いた文字の図形の頂点の色で確かめる。選択した文字は普段の文字色のまま描かれるため、地の側を差し替える。
+//! テーマを適用した部品の範囲選択の地が、強調色でなく、強調色を地の色の方へ寄せた色で塗られ、普段の文字色と
+//! WCAG 2 のコントラスト比で 4.5 以上離れることを、描いた文字の図形の頂点の色で確かめる。
+//! 選択した文字は普段の文字色のまま描かれるため、地の側を差し替える。対象は入力欄・数値入力の編集中の欄・選択できる文字表示である。
 
 mod common;
 
-use common::accent::{地の色, 文字色, 琥珀, 琥珀のテーマ};
-use common::glyph::文字の図形一覧;
+use common::accent::{
+    コントラスト比, 地の色, 文字色, 琥珀, 琥珀のテーマ, 範囲選択の地の色
+};
 use egui::Color32;
-use sengen_egui::{ノード, 一行テキスト入力, 修飾キー};
+use sengen_egui::{ノード, 一行テキスト入力, 修飾キー, 数値入力, 文字表示};
 
-#[test]
-fn 入力欄の範囲選択の地は強調色でなく地の色の方へ寄せた色で塗られる() {
-    let eguiの本体 = egui::Context::default();
-    琥珀のテーマ(None).適用する(&eguiの本体);
-    let 木を組む = || -> ノード<()> { 一行テキスト入力("選ぶ文字", |_| ()).into() };
-    let _ = common::左クリックする(&eguiの本体, egui::pos2(20.0, 18.0), &木を組む);
-    let 全選択 = common::キー押下(egui::Key::A, 修飾キー::COMMAND);
+/// WCAG 2 が本文の文字に求めるコントラスト比の下限。
+const 読める下限: f32 = 4.5;
+
+fn 全選択して描く(
+    eguiの本体: &egui::Context,
+    木を組む: &dyn Fn() -> ノード<()>,
+) -> egui::FullOutput {
     let 入力 = egui::RawInput {
-        events: vec![全選択],
+        events: vec![common::キー押下(egui::Key::A, 修飾キー::COMMAND)],
         ..Default::default()
     };
-    let (_, 出力) = common::output::入力を指定して描画する(&eguiの本体, 入力, &木を組む);
-    let 地の色一覧: Vec<Color32> = 文字の図形一覧(&出力)
-        .into_iter()
-        .filter(|図形| 図形.galley.text() == "選ぶ文字")
-        .flat_map(|図形| {
-            図形
-                .galley
-                .rows
-                .iter()
-                .flat_map(|行| 行.row.visuals.mesh.vertices.clone())
-                .collect::<Vec<_>>()
-        })
-        .map(|頂点| 頂点.color)
-        .filter(|色| *色 != Color32::PLACEHOLDER && *色 != 文字色)
-        .collect();
-    let Some(地) = 地の色一覧.first().copied() else {
+    common::output::入力を指定して描画する(eguiの本体, 入力, 木を組む).1
+}
+
+fn 読める地であることを確かめる(地: Option<Color32>) {
+    let Some(地) = 地 else {
         panic!("範囲選択の地が描かれていない");
     };
-    assert_ne!(地, 琥珀, "{地の色一覧:?}");
+    assert_ne!(地, 琥珀);
     let 間にある = 地
         .to_array()
         .into_iter()
         .zip(琥珀.to_array().into_iter().zip(地の色.to_array()))
         .all(|(値, (左, 右))| 左.min(右) <= 値 && 値 <= 左.max(右));
     assert!(間にある, "範囲選択の地 {地:?} が強調色と地の色の間にない");
+    let 比 = コントラスト比(地, 文字色);
+    assert!(
+        比 >= 読める下限,
+        "範囲選択の地 {地:?} と文字色のコントラスト比が {比} しかない"
+    );
+}
+
+#[test]
+fn 入力欄の範囲選択の地は文字色と見分けられる色で塗られる() {
+    let eguiの本体 = egui::Context::default();
+    琥珀のテーマ(None).適用する(&eguiの本体);
+    let 木を組む = || -> ノード<()> { 一行テキスト入力("選ぶ文字", |_| ()).into() };
+    let _ = common::左クリックする(&eguiの本体, egui::pos2(20.0, 18.0), &木を組む);
+    let 出力 = 全選択して描く(&eguiの本体, &木を組む);
+    読める地であることを確かめる(範囲選択の地の色(&出力, "選ぶ文字"));
+}
+
+#[test]
+fn 数値入力の編集中の欄の範囲選択の地も文字色と見分けられる色で塗られる() {
+    let eguiの本体 = egui::Context::default();
+    琥珀のテーマ(None).適用する(&eguiの本体);
+    let 木を組む = || -> ノード<()> { 数値入力(123, 0..=1000, |_| ()).into() };
+    let _ = common::左クリックする(&eguiの本体, egui::pos2(14.0, 18.0), &木を組む);
+    let 出力 = 全選択して描く(&eguiの本体, &木を組む);
+    読める地であることを確かめる(範囲選択の地の色(&出力, "123"));
+}
+
+#[test]
+fn 選択できる文字表示の範囲選択の地も文字色と見分けられる色で塗られる() {
+    let eguiの本体 = egui::Context::default();
+    琥珀のテーマ(None).適用する(&eguiの本体);
+    let 木を組む = || -> ノード<()> { 文字表示("選べる文字").選択できる().into() };
+    let 始点 = egui::pos2(9.0, 15.0);
+    let _ = common::drag::左ドラッグする(
+        &eguiの本体,
+        始点,
+        始点 + egui::vec2(60.0, 0.0),
+        &木を組む,
+    );
+    let 集まり = common::drag::左ドラッグする(
+        &eguiの本体,
+        始点,
+        始点 + egui::vec2(60.0, 0.0),
+        &木を組む,
+    );
+    assert!(集まり.is_empty());
+    let (_, 出力) = common::output::入力を指定して描画する(
+        &eguiの本体,
+        egui::RawInput::default(),
+        &木を組む,
+    );
+    読める地であることを確かめる(範囲選択の地の色(&出力, "選べる文字"));
 }

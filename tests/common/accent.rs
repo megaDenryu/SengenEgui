@@ -57,3 +57,38 @@ pub fn 文字の色(
 ) -> Option<Color32> {
     文字の色一覧(eguiの本体, 文字列, 木を組む).first().copied()
 }
+
+/// 描いた文字の図形のうち、指定の文字列の行に塗られた、PLACEHOLDER でも文字色でもない頂点の色（範囲選択の地の色）。
+pub fn 範囲選択の地の色(出力: &egui::FullOutput, 文字列: &str) -> Option<Color32> {
+    文字の図形一覧(出力)
+        .into_iter()
+        .filter(|図形| 図形.galley.text() == 文字列)
+        .flat_map(|図形| {
+            let 行一覧 = 図形.galley.rows.clone();
+            行一覧
+                .into_iter()
+                .flat_map(|行| 行.row.visuals.mesh.vertices.clone())
+        })
+        .map(|頂点| 頂点.color)
+        .find(|色| *色 != Color32::PLACEHOLDER && *色 != 文字色)
+}
+
+/// WCAG 2 のコントラスト比。試験の側で独立に計算し、部品の計算と突き合わせる。
+pub fn コントラスト比(甲: Color32, 乙: Color32) -> f32 {
+    let 相対輝度 = |色: Color32| {
+        let 線形 = |成分: u8| {
+            let 値 = f32::from(成分) / 255.0;
+            if 値 <= 0.04045 {
+                値 / 12.92
+            } else {
+                ((値 + 0.055) / 1.055).powf(2.4)
+            }
+        };
+        0.2126 * 線形(色.r()) + 0.7152 * 線形(色.g()) + 0.0722 * 線形(色.b())
+    };
+    let (明るい方, 暗い方) = (
+        相対輝度(甲).max(相対輝度(乙)),
+        相対輝度(甲).min(相対輝度(乙)),
+    );
+    (明るい方 + 0.05) / (暗い方 + 0.05)
+}

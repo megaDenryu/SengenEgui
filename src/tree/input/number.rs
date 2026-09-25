@@ -3,6 +3,7 @@
 
 use std::ops::RangeInclusive;
 
+use crate::theme::強調色まわりの色;
 use crate::tree::input::erased::{型を消した入力型, 描画の結果};
 use crate::tree::input::入力の部品;
 use crate::tree::ノード;
@@ -74,7 +75,7 @@ impl<M, 数: egui::emath::Numeric> 数値入力型<M, 数> {
         if let Some(桁数) = self.小数点以下の桁数指定 {
             部品 = 部品.fixed_decimals(桁数);
         }
-        let 反応 = ui.add(部品);
+        let 反応 = 強調色まわりの色::読む(ui).範囲選択の地を差し替えて描く(ui, 部品);
         描画の結果 {
             発行する応答: 反応
                 .changed()
