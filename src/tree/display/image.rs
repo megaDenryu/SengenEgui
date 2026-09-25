@@ -6,6 +6,7 @@
 //! `画像の出所::テクスチャ`（利用側が画素から作って egui に登録済みのテクスチャ。`差し替えられるテクスチャ` から作る）だけである。
 
 use crate::measure::{割合で表した矩形, 縦横の論理画素, 論理画素};
+use crate::texture::テクスチャの持ち手;
 
 /// 画像の出所とは、表示する画像をどこから取るかの区別のことである。
 #[derive(Clone)]
@@ -13,7 +14,7 @@ pub enum 画像の出所 {
     /// 読み込み器が解決する URI。
     URI(String),
     /// egui に登録済みのテクスチャ。
-    テクスチャ(egui::TextureHandle),
+    テクスチャ(テクスチャの持ち手),
 }
 
 impl From<&str> for 画像の出所 {
@@ -30,7 +31,7 @@ impl From<String> for 画像の出所 {
 
 impl From<egui::TextureHandle> for 画像の出所 {
     fn from(値: egui::TextureHandle) -> Self {
-        Self::テクスチャ(値)
+        Self::テクスチャ(テクスチャの持ち手::from(値))
     }
 }
 
@@ -110,9 +111,9 @@ impl 画像型 {
         let 部分 = self.描く部分指定.unwrap_or(割合で表した矩形::全体);
         let mut 部品 = match &self.出所 {
             画像の出所::URI(綴り) => egui::Image::from_uri(綴り.clone()),
-            画像の出所::テクスチャ(テクスチャ) => {
-                egui::Image::from_texture(部分.描く部分の大きさを持つテクスチャ(テクスチャ))
-            }
+            画像の出所::テクスチャ(テクスチャ) => egui::Image::from_texture(
+                部分.描く部分の大きさを持つテクスチャ(テクスチャ.eguiへ渡す値()),
+            ),
         }
         .uv(部分.eguiのuvへ渡す値());
         if let Some(幅) = self.最大幅指定 {

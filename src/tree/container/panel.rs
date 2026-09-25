@@ -3,10 +3,12 @@
 //! 注意: egui は縁のパネルを先に描いて残りの領域を決めるため、中央パネルは同じ親の中で
 //! 上下左右のパネルより後に置く。先に置くと中央が領域を全部取り、縁のパネルが重なる。
 //! 縁のパネルの幅・高さは egui が識別子ごとに内部保持し、既定の値は最初のフレームだけに効く。
+//! 装飾の枠系の項目は、egui のパネルの既定の枠（テーマの地の色と既定の内余白）へ上書きする。指定の無い項目は既定のまま残る。
 
 use std::rc::Rc;
 
 use crate::measure::論理画素;
+use crate::style::スタイル;
 use crate::tree::container::panel_side::{パネルの位置, 縁の種類};
 use crate::tree::{ノード, 子を順に描画する};
 
@@ -16,6 +18,7 @@ pub struct パネル型<M> {
     位置: パネルの位置,
     既定の寸法指定: Option<論理画素>,
     大きさを変えられる指定: bool,
+    装飾値: スタイル,
     子一覧: Vec<ノード<M>>,
 }
 
@@ -28,6 +31,7 @@ impl<M> パネル型<M> {
             位置,
             既定の寸法指定: None,
             大きさを変えられる指定: false,
+            装飾値: スタイル::無指定,
             子一覧,
         }
     }
@@ -49,6 +53,13 @@ impl<M> パネル型<M> {
         self.大きさを変えられる指定 = 変えられる;
         self
     }
+
+    /// 装飾を適用する。使う項目は枠系（背景色・内余白・外余白・角丸・枠線色・枠線太さ）であり、
+    /// 背景色はパネルの地の全体を塗る。指定しない項目はテーマの地の色と egui の既定の余白のまま残る。
+    pub fn 装飾(mut self, 指定: スタイル) -> Self {
+        self.装飾値 = 指定;
+        self
+    }
 }
 
 impl<M: Clone> パネル型<M> {
@@ -60,10 +71,13 @@ impl<M: Clone> パネル型<M> {
         let 中身を描く =
             |内側: &mut egui::Ui| 子を順に描画する(&self.子一覧, 内側, 発行した応答);
         let 寸法 = self.既定の寸法指定.map(論理画素::eguiへ渡す値);
-        match self.位置.縁の種類へ変換する() {
+        let 種類 = self.位置.縁の種類へ変換する();
+        let 枠 = self.装飾値.枠の指定を重ねる(種類.既定の枠(ui.style()));
+        match 種類 {
             縁の種類::左右(側) => {
                 let mut パネル = egui::SidePanel::new(側, self.識別子.clone())
-                    .resizable(self.大きさを変えられる指定);
+                    .resizable(self.大きさを変えられる指定)
+                    .frame(枠);
                 if let Some(幅) = 寸法 {
                     パネル = パネル.default_width(幅);
                 }
@@ -71,7 +85,8 @@ impl<M: Clone> パネル型<M> {
             }
             縁の種類::上下(側) => {
                 let mut パネル = egui::TopBottomPanel::new(側, self.識別子.clone())
-                    .resizable(self.大きさを変えられる指定);
+                    .resizable(self.大きさを変えられる指定)
+                    .frame(枠);
                 if let Some(高さ) = 寸法 {
                     パネル = パネル.default_height(高さ);
                 }
@@ -79,6 +94,7 @@ impl<M: Clone> パネル型<M> {
             }
             縁の種類::中央 => {
                 egui::CentralPanel::default()
+                    .frame(枠)
                     .show_inside(ui, 中身を描く)
                     .response
             }
@@ -95,6 +111,7 @@ impl<M: 'static> パネル型<M> {
             位置: self.位置,
             既定の寸法指定: self.既定の寸法指定,
             大きさを変えられる指定: self.大きさを変えられる指定,
+            装飾値: self.装飾値,
             子一覧: crate::tree::map::子一覧を写す(self.子一覧, &応答を変換する),
         }
     }

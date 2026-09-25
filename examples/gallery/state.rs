@@ -1,8 +1,7 @@
 //! 見本帳の状態と応答。画面は状態を読んで組み、操作は応答として発行され、ここで状態へ適用する。
 
-use eframe::egui;
 use sengen_egui::{
-    差し替えられるテクスチャ, 画素の並びの不正, 範囲枠の操作
+    差し替えられるテクスチャ, 画素の並びの不正, 範囲枠の操作, 色
 };
 
 use crate::sample_player::{再生画面の応答, 見本の再生};
@@ -21,7 +20,7 @@ pub enum 応答 {
     数を変えた(i32),
     小数を変えた(f32),
     選んだ(&'static str),
-    色を変えた(egui::Color32),
+    色を変えた(色),
     窓を開閉した(bool),
     覆いを開閉した(bool),
     受け取った(String),
@@ -41,7 +40,7 @@ pub struct 状態 {
     pub 数: i32,
     pub 小数: f32,
     pub 選んだもの: &'static str,
-    pub 色: egui::Color32,
+    pub 色: 色,
     pub 窓が開いている: bool,
     pub 覆いが開いている: bool,
     pub 受け取った一覧: Vec<String>,
@@ -64,7 +63,7 @@ impl 状態 {
             数: 3,
             小数: 0.5,
             選んだもの: "甲",
-            色: egui::Color32::from_rgb(80, 150, 240),
+            色: 色::from_rgb(80, 150, 240),
             窓が開いている: false,
             覆いが開いている: false,
             受け取った一覧: Vec::new(),

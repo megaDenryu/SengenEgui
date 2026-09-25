@@ -15,6 +15,7 @@ pub use operation::{範囲枠の掴んだ部分, 範囲枠の操作};
 
 use crate::measure::{割合で表した矩形, 画素, 縦横の論理画素, 論理画素};
 use crate::style::スタイル;
+use crate::texture::テクスチャの持ち手;
 use drag::範囲枠のドラッグ;
 use paint::範囲枠の描き方;
 
@@ -29,7 +30,7 @@ pub const 範囲枠付き画像の周りの余白: 論理画素 = つまみの�
 
 /// 範囲枠付き画像型とは、画像の上の矩形の枠をドラッグで動かし大きさを変える部品の記述のことである。
 pub struct 範囲枠付き画像型<M> {
-    テクスチャ: egui::TextureHandle,
+    テクスチャ: テクスチャの持ち手,
     表示寸法: 縦横の論理画素,
     枠: 割合で表した矩形,
     操作から応答を作る: Box<dyn Fn(範囲枠の操作) -> M>,
@@ -38,7 +39,7 @@ pub struct 範囲枠付き画像型<M> {
 
 impl<M> 範囲枠付き画像型<M> {
     pub(crate) fn 新規(
-        テクスチャ: egui::TextureHandle,
+        テクスチャ: テクスチャの持ち手,
         表示寸法: 縦横の論理画素,
         枠: 割合で表した矩形,
         操作から応答を作る: Box<dyn Fn(範囲枠の操作) -> M>,
@@ -64,9 +65,10 @@ impl<M> 範囲枠付き画像型<M> {
         ui: &mut egui::Ui,
         発行した応答: &mut Vec<M>,
     ) -> egui::Response {
-        let 部品 = egui::Image::from_texture(&self.テクスチャ)
-            .fit_to_exact_size(self.表示寸法.eguiへ渡す値());
-        let 大きさ = 部品.calc_size(ui.available_size(), Some(self.テクスチャ.size_vec2()));
+        let テクスチャ = self.テクスチャ.eguiへ渡す値();
+        let 部品 =
+            egui::Image::from_texture(テクスチャ).fit_to_exact_size(self.表示寸法.eguiへ渡す値());
+        let 大きさ = 部品.calc_size(ui.available_size(), Some(テクスチャ.size_vec2()));
         let 余白 = egui::Vec2::splat(範囲枠付き画像の周りの余白.eguiへ渡す値());
         let (確保した矩形, 反応) = ui.allocate_exact_size(大きさ + 余白 * 2.0, egui::Sense::drag());
         let 画像の矩形 = 確保した矩形.shrink2(余白);

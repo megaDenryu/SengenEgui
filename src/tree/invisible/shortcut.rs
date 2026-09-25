@@ -13,7 +13,7 @@
 pub struct キーの組(egui::KeyboardShortcut);
 
 impl キーの組 {
-    /// 修飾キー（Ctrl・Shift・Alt 等）とキーから組を作る。修飾キー無しなら `egui::Modifiers::NONE`。
+    /// 修飾キー（Ctrl・Shift・Alt 等）とキーから組を作る。修飾キー無しなら `修飾キー::NONE`。
     pub const fn 生成する(修飾キー: egui::Modifiers, キー: egui::Key) -> Self {
         Self(egui::KeyboardShortcut::new(修飾キー, キー))
     }

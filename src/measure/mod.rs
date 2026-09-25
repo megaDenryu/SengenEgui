@@ -18,3 +18,9 @@ pub use ratio::{割合, 割合の範囲外};
 pub use ratio_difference::{割合の差, 縦横の割合の差};
 pub use ratio_rect::{割合で表した矩形, 割合で表した矩形の不正};
 pub use zoom::{拡大率, 拡大率の範囲外};
+
+/// 倍精度の小数（f64）を、egui が使う単精度の小数（f32）の最も近い値へ丸める。単精度の範囲を超える値は無限大になる。
+/// lint が `as` による変換を禁じているため、egui の数の変換を使う。
+fn 単精度の小数へ丸める(値: f64) -> f32 {
+    <f32 as egui::emath::Numeric>::from_f64(値)
+}

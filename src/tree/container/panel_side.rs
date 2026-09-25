@@ -1,4 +1,4 @@
-//! パネルの位置と、それを egui のパネルの種類へ写す対応表。パネル型の描画が使う。
+//! パネルの位置と、それを egui のパネルの種類へ写す対応表と、種類ごとの既定の枠。パネル型の描画が使う。
 
 /// パネルの位置とは、親の領域のどの縁に固定するか、または中央を埋めるかの区別のことである。
 #[derive(Clone, Copy)]
@@ -30,6 +30,16 @@ impl パネルの位置 {
             Self::上 => 縁の種類::上下(egui::panel::TopBottomSide::Top),
             Self::下 => 縁の種類::上下(egui::panel::TopBottomSide::Bottom),
             Self::中央 => 縁の種類::中央,
+        }
+    }
+}
+
+impl 縁の種類 {
+    /// egui がパネルの種類ごとに使う既定の枠（テーマの地の色と既定の内余白）。装飾はこの枠へ上書きする。
+    pub(super) fn 既定の枠(&self, 見た目: &egui::Style) -> egui::Frame {
+        match self {
+            Self::左右(_) | Self::上下(_) => egui::Frame::side_top_panel(見た目),
+            Self::中央 => egui::Frame::central_panel(見た目),
         }
     }
 }

@@ -10,7 +10,7 @@ use std::rc::Rc;
 
 use crate::measure::{画素, 論理画素};
 use crate::style::スタイル;
-use crate::tree::container::overlay_place::{寄せて描く, 重ねる位置, 重ねる置き方};
+use crate::tree::container::overlay_place::{重ねる位置, 重ねる置き方};
 use crate::tree::ノード;
 
 const 既定の端からの間隔: 論理画素 = 画素(8.0);
@@ -39,6 +39,19 @@ impl<M> 重ね型<M> {
     pub fn 上に置く(mut self, 位置: 重ねる位置, 子: impl Into<ノード<M>>) -> Self {
         self.重ねる子一覧
             .push((重ねる置き方::寄せて置く(位置), 子.into()));
+        self
+    }
+
+    /// 下地の上にマウスがある間だけ、`上に置く` と同じ位置へ子を重ねる。マウスが重ねた子の上にあるときも、
+    /// 子は下地の範囲の中にあるため出たままである。子が見えない間は、子の中のボタンも押せない。
+    /// 初めて出す回は大きさを測るため見えない（人の目には1フレームである）。
+    pub fn マウスを乗せている間だけ上に置く(
+        mut self,
+        位置: 重ねる位置,
+        子: impl Into<ノード<M>>,
+    ) -> Self {
+        let 置き方 = 重ねる置き方::マウスを乗せている間だけ寄せて置く(位置);
+        self.重ねる子一覧.push((置き方, 子.into()));
         self
     }
 
@@ -76,21 +89,9 @@ impl<M: Clone> 重ね型<M> {
                 self.下地.描画する(内側, 発行した応答)
             })
             .inner;
-        let 下地の矩形 = 下地の反応.rect;
         for (番号, (置き方, 子)) in self.重ねる子一覧.iter().enumerate() {
             let 鍵 = egui::Id::new(("重ねる", &self.識別子, 番号));
-            let (位置, 範囲) = match *置き方 {
-                重ねる置き方::寄せて置く(位置) => {
-                    (位置, 下地の矩形.shrink(self.端からの間隔.eguiへ渡す値()))
-                }
-                重ねる置き方::覆って中央に置く(色) => {
-                    ui.painter().rect_filled(下地の矩形, 0.0, 色);
-                    let 覆いの感じ方 = egui::Sense::click_and_drag();
-                    let _ = ui.interact(下地の矩形, 鍵.with("覆い"), 覆いの感じ方);
-                    (重ねる位置::中央, 下地の矩形)
-                }
-            };
-            寄せて描く(ui, 鍵, 位置, 範囲, 子, 発行した応答);
+            置き方.子を描く(ui, 鍵, 下地の反応.rect, self.端からの間隔, 子, 発行した応答);
         }
         下地の反応
     }

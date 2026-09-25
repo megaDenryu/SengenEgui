@@ -1,5 +1,5 @@
 //! 見本帳。全部品を1画面に並べ、利用側と同じ書き方（糖衣ファクトリだけ）で組む。
-//! 素の egui を使うのは、この起動の部分（窓の作成・フォント・egui の本体をテクスチャの登録へ渡すこと）だけである。
+//! 素の egui を使うのは、この起動の部分（窓の作成・egui の本体をフォントの設定とテクスチャの登録へ渡すこと）だけである。
 //! 起動: リポジトリルートで `cargo run -p sengen_egui --example gallery`
 //! （GameScriptingTheory では `cargo xtask ui-gallery`）。
 
@@ -8,7 +8,6 @@
 mod attach_page;
 mod container_page;
 mod display_page;
-mod font;
 mod input_page;
 mod player_page;
 mod player_video;
@@ -21,7 +20,7 @@ mod state;
 mod styles;
 
 use eframe::egui;
-use sengen_egui::拡大縮小の仕方;
+use sengen_egui::{拡大縮小の仕方, 日本語フォントの候補};
 
 struct 見本帳アプリ {
     状態: state::状態,
@@ -54,7 +53,11 @@ fn main() -> std::process::ExitCode {
         選択肢,
         Box::new(|作成文脈| {
             styles::画面のテーマ.適用する(&作成文脈.egui_ctx);
-            font::日本語フォントを設定する(&作成文脈.egui_ctx);
+            let 候補 = 日本語フォントの候補::標準で入っている候補();
+            if let Err(失敗) = 候補.最初に読めたものを設定する(&作成文脈.egui_ctx)
+            {
+                eprintln!("{失敗}。表示が崩れる場合は OS へ日本語フォントを導入する");
+            }
             let eguiの本体 = &作成文脈.egui_ctx;
             let 見本の画素 = sample_texture::見本の画素のバイト列::ずらして作る(0);
             let 画像 = sengen_egui::差し替えられるテクスチャ::登録して作る(
