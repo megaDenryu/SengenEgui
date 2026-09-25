@@ -3,7 +3,9 @@
 
 #![allow(dead_code)]
 
+pub mod drag;
 pub mod image;
+pub mod range_frame;
 
 use sengen_egui::ノード;
 
@@ -72,31 +74,6 @@ pub fn 左クリックする<M: Clone>(
     木を組む: &dyn Fn() -> ノード<M>,
 ) -> Vec<M> {
     クリックする(文脈, 位置, egui::PointerButton::Primary, 木を組む)
-}
-
-/// 最初のフレームで配置を決め、始点で左ボタンを押し、中間点を経て終点で放すまでの全フレームの応答を返す。
-pub fn 左ドラッグする<M: Clone>(
-    文脈: &egui::Context,
-    始点: egui::Pos2,
-    終点: egui::Pos2,
-    木を組む: &dyn Fn() -> ノード<M>,
-) -> Vec<M> {
-    let mut 集まり = 描画する(文脈, vec![], 木を組む);
-    集まり.extend(描画する(
-        文脈,
-        vec![
-            egui::Event::PointerMoved(始点),
-            ボタンの出来事(始点, egui::PointerButton::Primary, true),
-        ],
-        木を組む,
-    ));
-    for 位置 in [始点.lerp(終点, 0.5), 終点] {
-        let 出来事一覧 = vec![egui::Event::PointerMoved(位置)];
-        集まり.extend(描画する(文脈, 出来事一覧, 木を組む));
-    }
-    let 放す = ボタンの出来事(終点, egui::PointerButton::Primary, false);
-    集まり.extend(描画する(文脈, vec![放す], 木を組む));
-    集まり
 }
 
 /// キーの押下の出来事を作る。

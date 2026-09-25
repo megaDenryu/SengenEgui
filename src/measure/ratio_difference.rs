@@ -15,9 +15,21 @@ impl 割合の差 {
         Self(値)
     }
 
+    /// 下限と上限の間へ収めた差。下限が上限を超えるときは上限を返す。
+    pub fn 下限と上限の間へ収める(self, 下限: Self, 上限: Self) -> Self {
+        Self(self.0.max(下限.0).min(上限.0))
+    }
+
     /// 生の値。利用する側が自分のドメインの型へ移す境界でだけ使う。
     pub const fn 生の値(self) -> f32 {
         self.0
+    }
+}
+
+impl std::ops::Neg for 割合の差 {
+    type Output = Self;
+    fn neg(self) -> Self {
+        Self(-self.0)
     }
 }
 

@@ -6,6 +6,9 @@
 use super::operation::{範囲枠の掴んだ部分, 範囲枠の操作};
 use crate::measure::{縦横の割合の差, 論理画素};
 
+/// 枠を動かすボタン。右ボタンと中ボタンは右クリックメニュー等の別の操作に使われるため、ドラッグとして扱わない。
+const 主ボタン: egui::PointerButton = egui::PointerButton::Primary;
+
 /// 掴んでいる間の記憶とは、ドラッグを始めたときに決まり、放すまで変わらない値の組のことである。
 #[derive(Clone, Copy)]
 struct 掴んでいる間の記憶 {
@@ -26,7 +29,7 @@ impl 範囲枠のドラッグ<'_> {
     pub(super) fn 操作を読み取る(&self, ui: &egui::Ui) -> Vec<範囲枠の操作> {
         let 鍵 = self.記憶の鍵();
         let mut 操作一覧 = Vec::new();
-        if self.反応.drag_started() {
+        if self.反応.drag_started_by(主ボタン) {
             ui.data_mut(|記憶域| 記憶域.remove::<掴んでいる間の記憶>(鍵));
             if let Some(記憶) = self.掴み始めを判定する(ui) {
                 ui.data_mut(|記憶域| 記憶域.insert_temp(鍵, 記憶));
@@ -47,7 +50,7 @@ impl 範囲枠のドラッグ<'_> {
             現在位置 - 記憶.開始位置,
             self.画像の矩形.size(),
         );
-        if self.反応.dragged() && !self.反応.drag_stopped() {
+        if self.反応.dragged_by(主ボタン) && !self.反応.drag_stopped_by(主ボタン) {
             操作一覧.push(範囲枠の操作::動かしている {
                 掴んだ部分,
                 開始点からの移動量,
@@ -55,7 +58,7 @@ impl 範囲枠のドラッグ<'_> {
             return 操作一覧;
         }
         ui.data_mut(|記憶域| 記憶域.remove::<掴んでいる間の記憶>(鍵));
-        if self.反応.drag_stopped() {
+        if self.反応.drag_stopped_by(主ボタン) {
             操作一覧.push(範囲枠の操作::放した {
                 掴んだ部分,
                 開始点からの移動量,

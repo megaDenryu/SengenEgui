@@ -28,7 +28,9 @@ pub use multiline::複数行テキスト入力型;
 pub use number::数値入力型;
 pub use pressable_image::押せる画像型;
 pub use radio::ラジオボタン型;
-pub use range_frame::{範囲枠の掴んだ部分, 範囲枠の操作, 範囲枠付き画像型};
+pub use range_frame::{
+    範囲枠の掴んだ部分, 範囲枠の操作, 範囲枠付き画像の周りの余白, 範囲枠付き画像型,
+};
 pub use selectable::選択ボタン型;
 pub use slider::スライダー型;
 pub use text_field::一行テキスト入力型;
