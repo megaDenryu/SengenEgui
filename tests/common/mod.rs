@@ -9,6 +9,7 @@ pub mod glyph;
 pub mod image;
 pub mod output;
 pub mod overlay;
+pub mod range_band;
 pub mod range_frame;
 
 use sengen_egui::ノード;

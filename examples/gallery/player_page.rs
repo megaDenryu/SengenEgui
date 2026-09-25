@@ -7,12 +7,12 @@ use sengen_egui::{
     落とされたファイルを受け取る,
 };
 
-use crate::player_video;
 use crate::sample_player::{
     一コマの時間, 再生の長さ, 再生画面の応答 as 再生, 見本の再生
 };
 use crate::state::{応答, 状態};
 use crate::styles;
+use crate::{player_clip, player_video};
 
 pub fn 包む(応答: 再生) -> 応答 {
     応答::再生画面(応答)
@@ -30,6 +30,7 @@ pub fn ページ(状態: &状態) -> ノード<応答> {
             .装飾(styles::見出し),
         player_video::映像の欄(再生の状態),
         再生の操作(再生の状態),
+        player_clip::区間の欄(再生の状態),
         文字表示("札（札の全体を押すと選び、中のボタンは札を選ばずに通知を出す）")
             .装飾(styles::見出し),
         横並び(

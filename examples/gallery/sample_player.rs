@@ -6,9 +6,10 @@ use std::time::{Duration, Instant};
 
 use eframe::egui;
 use sengen_egui::{
-    差し替えられるテクスチャ, 拡大縮小の仕方, 画素の並びの不正, 通知の回
+    区間の帯の操作, 差し替えられるテクスチャ, 拡大縮小の仕方, 画素の並びの不正, 通知の回,
 };
 
+use crate::sample_clip::見本の区間;
 use crate::sample_texture::見本の画素のバイト列;
 
 /// 見本の再生の長さ。再生位置の帯の範囲になる。
@@ -25,6 +26,7 @@ pub enum 再生画面の応答 {
     札を選んだ(usize),
     通知を出した(&'static str),
     ファイルを受け取った(PathBuf),
+    区間の帯を操作した(区間の帯の操作),
 }
 
 /// 見本の再生とは、映像のテクスチャと再生の進み具合と、再生画面の他の表示の状態の組のことである。
@@ -35,6 +37,7 @@ pub struct 見本の再生 {
     pub 選んだ札: usize,
     pub 通知: Option<(通知の回, &'static str)>,
     pub 受け取ったファイル: Vec<String>,
+    pub 区間: 見本の区間,
     表示中のコマ: u32,
     前回の時刻: Option<Instant>,
 }
@@ -57,6 +60,7 @@ impl 見本の再生 {
             選んだ札: 0,
             通知: None,
             受け取ったファイル: Vec::new(),
+            区間: 見本の区間::新規(),
             表示中のコマ: 0,
             前回の時刻: None,
         })
@@ -93,6 +97,11 @@ impl 見本の再生 {
             }
             再生画面の応答::ファイルを受け取った(パス) => {
                 self.受け取ったファイル.push(パス.display().to_string())
+            }
+            再生画面の応答::区間の帯を操作した(操作) => {
+                if let Some(秒) = self.区間.操作を適用する(操作) {
+                    self.位置 = Duration::from_secs_f64(秒.clamp(0.0, 再生の長さ.as_secs_f64()));
+                }
             }
         }
     }
