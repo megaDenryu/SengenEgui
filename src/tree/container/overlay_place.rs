@@ -11,7 +11,7 @@ use crate::measure::論理画素;
 use crate::tree::ノード;
 
 /// 重ねる位置とは、下地の矩形の中の9つの寄せ先の区別のことである。
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum 重ねる位置 {
     /// 左上の隅。
     左上,
@@ -61,6 +61,17 @@ pub(super) enum 重ねる置き方 {
 }
 
 impl 重ねる置き方 {
+    /// 重ねる子の大きさを記憶する鍵の区分。寄せる位置と、覆う置き方かの組である。
+    /// マウスを乗せている間だけ置く子は、寄せて置く子と同じ区分に入る。
+    pub(super) fn 記憶の区分(self) -> (重ねる位置, bool) {
+        match self {
+            Self::寄せて置く(位置) | Self::マウスを乗せている間だけ寄せて置く(位置) => {
+                (位置, false)
+            }
+            Self::覆って中央に置く(_) => (重ねる位置::中央, true),
+        }
+    }
+
     /// 置き方から寄せ先と範囲を決めて子を描く。マウスを乗せている間だけ置く子は、マウスが下地の外にあれば描かない。
     pub(super) fn 子を描く<M: Clone>(
         self,
