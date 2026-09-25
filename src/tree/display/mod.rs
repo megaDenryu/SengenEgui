@@ -2,13 +2,15 @@
 
 mod external_link;
 mod image;
+mod image_source;
 mod notice;
 mod progress_bar;
 mod spinner;
 mod text;
 
 pub use external_link::外部リンク型;
-pub use image::{画像の出所, 画像型};
+pub use image::画像型;
+pub use image_source::画像の出所;
 pub use notice::{一定時間で消える通知型, 通知の回};
 pub use progress_bar::進捗バー型;
 pub use spinner::読み込み中表示型;

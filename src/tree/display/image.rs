@@ -6,34 +6,7 @@
 //! `画像の出所::テクスチャ`（利用側が画素から作って egui に登録済みのテクスチャ。`差し替えられるテクスチャ` から作る）だけである。
 
 use crate::measure::{割合で表した矩形, 縦横の論理画素, 論理画素};
-use crate::texture::登録したテクスチャの参照;
-
-/// 画像の出所とは、表示する画像をどこから取るかの区別のことである。
-#[derive(Clone)]
-pub enum 画像の出所 {
-    /// 読み込み器が解決する URI。
-    URI(String),
-    /// egui に登録済みのテクスチャ。
-    テクスチャ(登録したテクスチャの参照),
-}
-
-impl From<&str> for 画像の出所 {
-    fn from(値: &str) -> Self {
-        Self::URI(値.to_string())
-    }
-}
-
-impl From<String> for 画像の出所 {
-    fn from(値: String) -> Self {
-        Self::URI(値)
-    }
-}
-
-impl From<egui::TextureHandle> for 画像の出所 {
-    fn from(値: egui::TextureHandle) -> Self {
-        Self::テクスチャ(登録したテクスチャの参照::from(値))
-    }
-}
+use crate::tree::display::image_source::画像の出所;
 
 /// 画像型とは、画像を表示する部品の記述のことである。
 pub struct 画像型 {
