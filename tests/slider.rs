@@ -50,3 +50,21 @@ fn ドラッグの間は動かしている応答が出て放すと放した応�
     );
     assert!(matches!(集まり.last(), Some(応答::放した(_))), "{集まり:?}");
 }
+
+fn 刻みの付いた帯() -> ノード<応答> {
+    スライダー(0.5_f32, 0.0..=1.0, 応答::動かしている)
+        .刻み(0.25)
+        .操作を終えたら発する(応答::放した)
+        .into()
+}
+
+#[test]
+fn フォーカスを持つ間に矢印キーで値を変えると変わった応答の後に終えた応答が出る() {
+    let eguiの本体 = egui::Context::default();
+    let _ = common::描画する(&eguiの本体, vec![], &刻みの付いた帯);
+    let タブ = common::キー押下(egui::Key::Tab, egui::Modifiers::NONE);
+    let _ = common::描画する(&eguiの本体, vec![タブ], &刻みの付いた帯);
+    let 右 = common::キー押下(egui::Key::ArrowRight, egui::Modifiers::NONE);
+    let 集まり = common::描画する(&eguiの本体, vec![右], &刻みの付いた帯);
+    assert_eq!(集まり, vec![応答::動かしている(0.75), 応答::放した(0.75)]);
+}

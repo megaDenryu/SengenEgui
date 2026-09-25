@@ -3,6 +3,8 @@
 //! 重ねる子の大きさは描いてみるまで分からないため、前の回に描いた大きさを egui の一時記憶に置き、
 //! その大きさで寄せ先を決める。初めて描く回は見えない状態で大きさだけを測り、描き直しを求める。
 //! そのため重ねる子を押せるのは、初めて描いた回の次の回からである。
+//! 子には寄せ先に関わらず範囲と同じ幅と高さを使わせる。幅いっぱいに広がる子も初めて測る回に範囲の幅で測られ、
+//! 次の回には正しい寄せ先に収まる。はみ出して描く分は範囲で切り取る。
 
 use crate::tree::ノード;
 
@@ -69,12 +71,13 @@ pub(super) fn 寄せて描く<M: Clone>(
         .eguiの寄せへ変換する()
         .align_size_within_rect(前回の大きさ.unwrap_or(egui::Vec2::ZERO), 範囲);
     let mut 作り = egui::UiBuilder::new()
-        .max_rect(egui::Rect::from_min_max(置く矩形.min, 範囲.max))
+        .max_rect(egui::Rect::from_min_size(置く矩形.min, 範囲.size()))
         .layout(egui::Layout::top_down(egui::Align::Min));
     if 前回の大きさ.is_none() {
         作り = 作り.sizing_pass().invisible();
     }
     let mut 子の領域 = ui.new_child(作り);
+    子の領域.set_clip_rect(範囲.intersect(ui.clip_rect()));
     子.描画する(&mut 子の領域, 発行した応答);
     let 今回の大きさ = 子の領域.min_rect().size();
     if 前回の大きさ != Some(今回の大きさ) {
