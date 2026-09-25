@@ -3,6 +3,7 @@
 
 #![allow(dead_code)]
 
+pub mod accent;
 pub mod drag;
 pub mod font_measure;
 pub mod glyph;

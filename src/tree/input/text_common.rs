@@ -5,12 +5,14 @@
 //! 確定時のみ発行では編集中の下書きを egui の一時記憶に置き、
 //! フォーカスが外れた（Enterを含む）ときだけ応答を発行する。Escape でフォーカスが外れたときは
 //! 取り消しとして下書きを捨て、応答を発行しない。下書きの寿命は `draft` が決める。
+//! 入力欄の範囲選択の地は、テーマが決めた色へ差し替えて描く（`強調色まわりの色` 参照）。
 
 mod draft;
 
 use std::rc::Rc;
 
 use crate::measure::論理画素;
+use crate::theme::強調色まわりの色;
 use draft::下書きの置き場;
 
 pub(super) struct テキスト入力の共通<M> {
@@ -68,7 +70,8 @@ impl<M> テキスト入力の共通<M> {
     ) -> egui::Response {
         let Some(識別子) = &self.確定時識別子 else {
             let mut 値 = self.値.clone();
-            let 反応 = ui.add(self.共通の指定を適用する(部品を組む(&mut 値)));
+            let 部品 = self.共通の指定を適用する(部品を組む(&mut 値));
+            let 反応 = 強調色まわりの色::読む(ui).入力欄を描く(ui, 部品);
             if 反応.changed() {
                 発行した応答.push((self.新しい値から応答を作る)(値));
             }
@@ -77,7 +80,8 @@ impl<M> テキスト入力の共通<M> {
         let 置き場 = 下書きの置き場::新規(ui, 識別子);
         let 取り出した = 置き場.取り出す(ui, &self.値);
         let mut 下書き = 取り出した.本文;
-        let 反応 = ui.add(self.共通の指定を適用する(部品を組む(&mut 下書き)));
+        let 部品 = self.共通の指定を適用する(部品を組む(&mut 下書き));
+        let 反応 = 強調色まわりの色::読む(ui).入力欄を描く(ui, 部品);
         let 外れた = 反応.lost_focus() || (取り出した.フォーカスを持っていた && !反応.has_focus());
         if !外れた {
             置き場.保存する(ui, 下書き, self.値.clone(), 反応.has_focus());
