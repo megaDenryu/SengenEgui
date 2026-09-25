@@ -5,6 +5,8 @@ mod integer_pixel;
 mod logical_pixel;
 mod pair;
 mod ratio;
+mod ratio_difference;
+mod ratio_rect;
 mod zoom;
 
 pub use integer_pixel::{
@@ -13,4 +15,6 @@ pub use integer_pixel::{
 pub use logical_pixel::{画素, 論理画素};
 pub use pair::{画素の組, 縦横の論理画素};
 pub use ratio::{割合, 割合の範囲外};
+pub use ratio_difference::{割合の差, 縦横の割合の差};
+pub use ratio_rect::{割合で表した矩形, 割合で表した矩形の不正};
 pub use zoom::{拡大率, 拡大率の範囲外};

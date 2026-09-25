@@ -10,6 +10,8 @@ mod container_page;
 mod display_page;
 mod font;
 mod input_page;
+mod sample_frame;
+mod sample_range_frame;
 mod screen;
 mod state;
 mod styles;

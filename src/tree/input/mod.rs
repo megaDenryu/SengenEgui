@@ -12,6 +12,7 @@ mod multiline;
 mod number;
 mod pressable_image;
 mod radio;
+mod range_frame;
 mod selectable;
 mod slider;
 mod text_common;
@@ -27,6 +28,7 @@ pub use multiline::複数行テキスト入力型;
 pub use number::数値入力型;
 pub use pressable_image::押せる画像型;
 pub use radio::ラジオボタン型;
+pub use range_frame::{範囲枠の掴んだ部分, 範囲枠の操作, 範囲枠付き画像型};
 pub use selectable::選択ボタン型;
 pub use slider::スライダー型;
 pub use text_field::一行テキスト入力型;
@@ -57,6 +59,8 @@ pub enum 入力の部品<M> {
     リンク(リンク型<M>),
     /// 押されると応答を発する画像。
     押せる画像(押せる画像型<M>),
+    /// 画像の上の矩形の枠をドラッグで動かし大きさを変える部品。
+    範囲枠付き画像(範囲枠付き画像型<M>),
 }
 
 impl<M: Clone> 入力の部品<M> {
@@ -78,6 +82,7 @@ impl<M: Clone> 入力の部品<M> {
             Self::色選択(中身) => 中身.描画する(ui, 発行した応答),
             Self::リンク(中身) => 中身.描画する(ui, 発行した応答),
             Self::押せる画像(中身) => 中身.描画する(ui, 発行した応答),
+            Self::範囲枠付き画像(中身) => 中身.描画する(ui, 発行した応答),
         }
     }
 }
@@ -96,3 +101,4 @@ impl<M: Clone> 入力の部品<M> {
 ノードへ変換する!(入力, 入力の部品::色選択, 色選択型<M>);
 ノードへ変換する!(入力, 入力の部品::リンク, リンク型<M>);
 ノードへ変換する!(入力, 入力の部品::押せる画像, 押せる画像型<M>);
+ノードへ変換する!(入力, 入力の部品::範囲枠付き画像, 範囲枠付き画像型<M>);
