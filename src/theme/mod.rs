@@ -9,13 +9,13 @@
 mod assign;
 mod contrast;
 mod mix;
-mod on_accent;
 mod palette;
+mod selection_colors;
 mod tone;
 
 use crate::measure::{拡大率, 縦横の論理画素, 角丸の画素};
-pub(crate) use on_accent::強調色まわりの色;
 use palette::配色;
+pub(crate) use selection_colors::選ばれた項目と範囲選択の色;
 pub use tone::明暗;
 
 /// テーマとは、画面全体へ一括で適用する見た目の指定のことである。
@@ -75,7 +75,7 @@ impl テーマ {
         };
         let 色の組 = self.配色();
         色の組.見た目へ割り当てる(&mut 見た目);
-        色の組.強調色まわりの色().置く(文脈);
+        色の組.選ばれた項目と範囲選択の色().一時記憶へ置く(文脈);
         self.角丸を見た目へ反映する(&mut 見た目);
         // 注意: set_visuals はその時点の明暗の側にだけ書く。起動時はOSの明暗が未着で濃色側になり、
         // 最初の描画でOSが淡色なら書いていない淡色側へ切り替わるため、明暗を固定してから明示の側へ書く。
