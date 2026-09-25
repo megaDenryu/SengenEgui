@@ -11,6 +11,7 @@ mod modal;
 mod overlay;
 mod overlay_place;
 mod panel;
+mod panel_axis_size;
 mod panel_side;
 mod panel_size;
 mod scroll;
