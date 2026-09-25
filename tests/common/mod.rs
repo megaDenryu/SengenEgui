@@ -3,6 +3,8 @@
 
 #![allow(dead_code)]
 
+pub mod image;
+
 use sengen_egui::ノード;
 
 /// 出来事を入れて1フレーム描画し、発した応答を返す。

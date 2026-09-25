@@ -72,6 +72,24 @@ impl 割合で表した矩形 {
         self.下端
     }
 
+    /// egui の画像の uv（左上を0・右下を1とした、テクスチャのうち描く範囲）へ渡す矩形。
+    pub(crate) fn eguiのuvへ渡す値(self) -> egui::Rect {
+        self.画面の矩形へ写す(egui::Rect::from_min_max(
+            egui::Pos2::ZERO,
+            egui::pos2(1.0, 1.0),
+        ))
+    }
+
+    /// テクスチャのうちこの矩形が指す部分を、その部分の寸法を持つテクスチャとして返す。
+    /// egui は縦横比を保つ計算に元のテクスチャ全体の寸法を使うため、描く部分の寸法へ差し替える。
+    pub(crate) fn 描く部分の大きさを持つテクスチャ(
+        self,
+        テクスチャ: &egui::TextureHandle,
+    ) -> egui::load::SizedTexture {
+        let 部分の比 = self.eguiのuvへ渡す値().size();
+        egui::load::SizedTexture::new(テクスチャ.id(), テクスチャ.size_vec2() * 部分の比)
+    }
+
     /// 画面上の画像の矩形の中で、この矩形が占める画面上の矩形を求める。
     pub(crate) fn 画面の矩形へ写す(self, 画像の矩形: egui::Rect) -> egui::Rect {
         let 横 = |端: 割合| 端.二つの値の間を取る(画像の矩形.left(), 画像の矩形.right());
