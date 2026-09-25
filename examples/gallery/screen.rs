@@ -8,9 +8,9 @@ use sengen_egui::{
 
 use crate::state::{応答, 状態};
 use crate::styles;
-use crate::{attach_page, container_page, display_page, input_page};
+use crate::{attach_page, container_page, display_page, input_page, player_page};
 
-const タブの見出し一覧: [&str; 4] = ["表示", "入力", "容器", "付け足し"];
+const タブの見出し一覧: [&str; 5] = ["表示", "入力", "容器", "付け足し", "再生画面"];
 
 pub fn 画面(状態: &状態) -> ノード<応答> {
     縦積み(子![
@@ -71,6 +71,7 @@ fn 本体(状態: &状態) -> ノード<応答> {
         条件付き表示(番号 == 1, || input_page::ページ(状態)),
         条件付き表示(番号 == 2, || container_page::ページ(状態)),
         条件付き表示(番号 == 3, || attach_page::ページ(状態)),
+        条件付き表示(番号 == 4, || player_page::ページ(状態)),
     ])
     .into()
 }
