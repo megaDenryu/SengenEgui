@@ -9,6 +9,7 @@ mod attach_page;
 mod container_page;
 mod display_page;
 mod input_page;
+mod panel_section;
 mod player_page;
 mod player_video;
 mod sample_frame;

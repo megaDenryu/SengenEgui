@@ -12,6 +12,7 @@ mod overlay;
 mod overlay_place;
 mod panel;
 mod panel_side;
+mod panel_size;
 mod scroll;
 mod stack;
 mod tabs;
