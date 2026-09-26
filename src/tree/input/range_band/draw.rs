@@ -28,9 +28,8 @@ impl<M> 区間の帯型<M> {
             &配置,
             self.今の値,
         );
-        if let Some(乗っている位置) = 反応.hover_pos()
-            && let Some(始め) = self.今の値.掴み始めを判定する(&配置, 乗っている位置)
-        {
+        if let Some(乗っている位置) = 反応.hover_pos() {
+            let 始め = self.今の値.掴み始めを判定する(&配置, 乗っている位置);
             ui.ctx().set_cursor_icon(始め.掴んだもの.カーソルの形());
         }
         let ドラッグ = 区間の帯のドラッグ {
