@@ -23,6 +23,7 @@ mod scroll;
 mod stack;
 mod tabs;
 mod virtual_list;
+mod visible_rows;
 mod window;
 
 pub use available_size::使える大きさから組む型;
@@ -42,6 +43,7 @@ pub use scroll::{スクロールの向き, スクロール型};
 pub use stack::積み型;
 pub use tabs::タブ列型;
 pub use virtual_list::仮想列型;
+pub use visible_rows::見えている行の範囲;
 pub use window::ウィンドウ型;
 
 /// 容器とは、子のノードを並べる部品の区別のことである。
