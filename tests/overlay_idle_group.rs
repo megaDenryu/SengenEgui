@@ -62,17 +62,17 @@ fn 止めて待つ(位置: egui::Pos2) -> egui::FullOutput {
 }
 
 #[test]
-fn 外側の子の上で止めると両方とも出たままでカーソルも出たまま() {
+fn 外側の子の上で止めても両方同時に隠れてカーソルも隠れる() {
     let 待った回 = 止めて待つ(操作の欄の真ん中);
-    assert_eq!(両方を描いたか(&待った回), (true, true));
-    assert_ne!(待った回.platform_output.cursor_icon, egui::CursorIcon::None);
+    assert_eq!(両方を描いたか(&待った回), (false, false));
+    assert_eq!(待った回.platform_output.cursor_icon, egui::CursorIcon::None);
 }
 
 #[test]
-fn 内側の子の上で止めると両方とも出たままでカーソルも出たまま() {
+fn 内側の子の上で止めても両方同時に隠れてカーソルも隠れる() {
     let 待った回 = 止めて待つ(編集へ戻るの上);
-    assert_eq!(両方を描いたか(&待った回), (true, true));
-    assert_ne!(待った回.platform_output.cursor_icon, egui::CursorIcon::None);
+    assert_eq!(両方を描いたか(&待った回), (false, false));
+    assert_eq!(待った回.platform_output.cursor_icon, egui::CursorIcon::None);
 }
 
 #[test]
@@ -90,4 +90,15 @@ fn どちらの子の上でもなく止めると両方同時に隠れてカー�
     let 過ぎた回 = 入れ子の木を描く(&eguiの本体, 2.3, vec![]);
     assert_eq!(両方を描いたか(&過ぎた回), (false, false));
     assert_eq!(過ぎた回.platform_output.cursor_icon, egui::CursorIcon::None);
+}
+
+#[test]
+fn 内側の子の上で押し続けている間は外側の子も出たまま() {
+    let eguiの本体 = egui::Context::default();
+    let _ = 入れ子の木を描く(&eguiの本体, 0.0, ポインタの移動(下地の真ん中));
+    let _ = 入れ子の木を描く(&eguiの本体, 0.1, ポインタの移動(編集へ戻るの上));
+    let 押す = common::ボタンの出来事(編集へ戻るの上, egui::PointerButton::Primary, true);
+    let _ = 入れ子の木を描く(&eguiの本体, 0.2, vec![押す]);
+    let 押し続けている回 = 入れ子の木を描く(&eguiの本体, 5.0, vec![]);
+    assert_eq!(両方を描いたか(&押し続けている回), (true, true));
 }

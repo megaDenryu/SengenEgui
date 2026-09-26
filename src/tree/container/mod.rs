@@ -12,6 +12,7 @@ mod overlay;
 mod overlay_children;
 mod overlay_idle;
 mod overlay_idle_group;
+mod overlay_idle_memory;
 mod overlay_idle_pointer;
 mod overlay_place;
 mod overlay_position;
