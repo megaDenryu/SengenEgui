@@ -1,6 +1,8 @@
 //! 一定時間で消える通知。画面の下の中央に、他の部品の上へ重ねて文を出し、表示する長さが過ぎたら消す。
+//! 複数の通知を渡すと、渡した順に上から縦に並べ、通知ごとに表示の時間を数えて過ぎたものから消す。
+//! 続けて出た通知が、前の通知を読む前に置き換えないためである。
 //!
-//! 出した時刻は egui の一時記憶に置く。ノード木は毎フレーム捨てるため木の側には置けず、
+//! 出した時刻は通知の回ごとに egui の一時記憶に置く。ノード木は毎フレーム捨てるため木の側には置けず、
 //! 利用する側に時刻を持たせると、利用する側が時計と消す応答を扱うことになるためである。
 //! 新しい通知かどうかは `通知の回` で見分ける。同じ文を続けて出しても、回を進めれば表示の時間が始めから数え直される。
 //! egui の重ねる領域（Area）は、識別子ごとに最初に出した1回だけ大きさを測って見えない。2回目以降は出した回から見える。
@@ -30,21 +32,35 @@ impl 通知の回 {
     }
 }
 
-/// 一定時間で消える通知型とは、通知の文と、その回と、表示する長さの記述のことである。
-pub struct 一定時間で消える通知型 {
-    識別子: String,
+/// 並べる通知とは、何番目に出した通知かを数える回と、その文の組のことである。
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct 並べる通知 {
     回: 通知の回,
     文: String,
+}
+
+impl 並べる通知 {
+    /// 回と文から作る。
+    pub fn 作成する(回: 通知の回, 文: impl Into<String>) -> Self {
+        Self {
+            回, 文: 文.into()
+        }
+    }
+}
+
+/// 一定時間で消える通知型とは、並べる通知の列と、表示する長さの記述のことである。
+pub struct 一定時間で消える通知型 {
+    識別子: String,
+    通知: Vec<並べる通知>,
     表示する長さ: Duration,
     装飾値: スタイル,
 }
 
 impl 一定時間で消える通知型 {
-    pub(crate) fn 新規(識別子: String, 回: 通知の回, 文: String) -> Self {
+    pub(crate) fn 新規(識別子: String, 通知: Vec<並べる通知>) -> Self {
         Self {
             識別子,
-            回,
-            文,
+            通知,
             表示する長さ: 既定の表示する長さ,
             装飾値: スタイル::無指定,
         }
@@ -63,42 +79,53 @@ impl 一定時間で消える通知型 {
     }
 
     pub(crate) fn 描画する(&self, ui: &mut egui::Ui) -> egui::Response {
-        let Some(残り) = self.残りの表示時間を求める(ui) else {
+        let 今 = ui.input(|入力| 入力.time);
+        let 出ている: Vec<(&並べる通知, Duration)> = self
+            .通知
+            .iter()
+            .filter_map(|通知| {
+                self.残りの表示時間を求める(ui, 通知, 今)
+                    .map(|残り| (通知, 残り))
+            })
+            .collect();
+        let Some(最も短い残り) = 出ている.iter().map(|(_, 残り)| *残り).min() else {
             return ui.response();
         };
-        ui.ctx().request_repaint_after(残り);
+        ui.ctx().request_repaint_after(最も短い残り);
         let 枠 = self.装飾値.枠の指定を重ねる(egui::Frame::popup(ui.style()));
-        let 文字 = self
-            .装飾値
-            .文字へ適用する(egui::RichText::new(self.文.clone()));
-        egui::Area::new(self.記憶の鍵())
+        egui::Area::new(egui::Id::new(("一定時間で消える通知", &self.識別子)))
             .anchor(
                 egui::Align2::CENTER_BOTTOM,
                 egui::vec2(0.0, -画面の下端からの間隔.eguiへ渡す値()),
             )
             .order(egui::Order::Foreground)
             .interactable(false)
-            .show(ui.ctx(), |内側| 枠.show(内側, |内側| 内側.label(文字)))
+            .show(ui.ctx(), |内側| {
+                for (通知, _) in &出ている {
+                    let 文字 = self
+                        .装飾値
+                        .文字へ適用する(egui::RichText::new(通知.文.clone()));
+                    枠.show(内側, |内側| 内側.label(文字));
+                }
+            })
             .response
     }
 
     /// この回を初めて描いた時刻を記憶し、表示の残り時間を返す。表示する長さを過ぎていれば None を返す。
-    fn 残りの表示時間を求める(&self, ui: &egui::Ui) -> Option<Duration> {
-        let 鍵 = self.記憶の鍵();
-        let 今 = ui.input(|入力| 入力.time);
-        let 記憶 = ui.data(|記憶域| 記憶域.get_temp::<(通知の回, f64)>(鍵));
-        let 出した時刻 = match 記憶 {
-            Some((回, 時刻)) if 回 == self.回 => 時刻,
-            _ => {
-                ui.data_mut(|記憶域| 記憶域.insert_temp(鍵, (self.回, 今)));
+    fn 残りの表示時間を求める(
+        &self,
+        ui: &egui::Ui,
+        通知: &並べる通知,
+        今: f64,
+    ) -> Option<Duration> {
+        let 鍵 = egui::Id::new(("一定時間で消える通知の回", &self.識別子, 通知.回));
+        let 出した時刻 = ui
+            .data(|記憶域| 記憶域.get_temp::<f64>(鍵))
+            .unwrap_or_else(|| {
+                ui.data_mut(|記憶域| 記憶域.insert_temp(鍵, 今));
                 今
-            }
-        };
+            });
         let 残りの秒 = self.表示する長さ.as_secs_f64() - (今 - 出した時刻);
         (残りの秒 > 0.0).then(|| Duration::from_secs_f64(残りの秒))
-    }
-
-    fn 記憶の鍵(&self) -> egui::Id {
-        egui::Id::new(("一定時間で消える通知", &self.識別子))
     }
 }
