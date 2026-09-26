@@ -1,4 +1,4 @@
-//! 重ねる位置と置き方と、重ねる子を寄せ先へ描く手順。重ねる容器が、子を下地のどこへ置くかを決める。
+//! 重ねる置き方と、重ねる子を寄せ先へ描く手順。重ねる容器が、子を下地のどこへ置くかを決める。
 //! 覆う置き方は、覆いを塗って下地への押下を受け止めることもここで行う。
 //!
 //! 重ねる子の大きさは描いてみるまで分からないため、前の回に描いた大きさを egui の一時記憶に置き、
@@ -9,46 +9,8 @@
 
 use crate::measure::論理画素;
 use crate::tree::container::overlay_idle::ポインタが止まると隠す指定;
+use crate::tree::container::overlay_position::重ねる位置;
 use crate::tree::ノード;
-
-/// 重ねる位置とは、下地の矩形の中の9つの寄せ先の区別のことである。
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub enum 重ねる位置 {
-    /// 左上の隅。
-    左上,
-    /// 上の辺の中央。
-    上,
-    /// 右上の隅。
-    右上,
-    /// 左の辺の中央。
-    左,
-    /// 真ん中。
-    中央,
-    /// 右の辺の中央。
-    右,
-    /// 左下の隅。
-    左下,
-    /// 下の辺の中央。
-    下,
-    /// 右下の隅。
-    右下,
-}
-
-impl 重ねる位置 {
-    pub(super) fn eguiの寄せへ変換する(self) -> egui::Align2 {
-        match self {
-            Self::左上 => egui::Align2::LEFT_TOP,
-            Self::上 => egui::Align2::CENTER_TOP,
-            Self::右上 => egui::Align2::RIGHT_TOP,
-            Self::左 => egui::Align2::LEFT_CENTER,
-            Self::中央 => egui::Align2::CENTER_CENTER,
-            Self::右 => egui::Align2::RIGHT_CENTER,
-            Self::左下 => egui::Align2::LEFT_BOTTOM,
-            Self::下 => egui::Align2::CENTER_BOTTOM,
-            Self::右下 => egui::Align2::RIGHT_BOTTOM,
-        }
-    }
-}
 
 /// 重ねる置き方とは、子を下地の上へどう置くかの区別のことである。
 #[derive(Clone, Copy)]
@@ -96,7 +58,7 @@ impl 重ねる置き方 {
                 (位置, 端から空けた範囲)
             }
             Self::ポインタが止まると隠して寄せて置く(位置, 指定) => {
-                let 子の矩形 = 置く矩形を求める(ui, 鍵, 位置, 端から空けた範囲);
+                let 子の矩形 = 位置.前回の大きさで置く矩形(ui, 鍵, 端から空けた範囲);
                 if !指定.出すかを決める(ui, 鍵, 下地の矩形, 子の矩形) {
                     return;
                 }
@@ -124,7 +86,7 @@ fn 寄せて描く<M: Clone>(
     発行した応答: &mut Vec<M>,
 ) {
     let 前回の大きさ = ui.data(|記憶域| 記憶域.get_temp::<egui::Vec2>(鍵));
-    let 置く矩形 = 置く矩形を求める(ui, 鍵, 位置, 範囲);
+    let 置く矩形 = 位置.前回の大きさで置く矩形(ui, 鍵, 範囲);
     let mut 作り = egui::UiBuilder::new()
         .max_rect(egui::Rect::from_min_size(置く矩形.min, 範囲.size()))
         .layout(egui::Layout::top_down(egui::Align::Min));
@@ -139,17 +101,4 @@ fn 寄せて描く<M: Clone>(
         ui.data_mut(|記憶域| 記憶域.insert_temp(鍵, 今回の大きさ));
         ui.ctx().request_repaint();
     }
-}
-
-/// 前の回に測った子の大きさを範囲の中の寄せ先へ置いた矩形。測っていなければ大きさ0の矩形である。
-fn 置く矩形を求める(
-    ui: &egui::Ui,
-    鍵: egui::Id,
-    位置: 重ねる位置,
-    範囲: egui::Rect,
-) -> egui::Rect {
-    let 前回の大きさ = ui.data(|記憶域| 記憶域.get_temp::<egui::Vec2>(鍵));
-    位置
-        .eguiの寄せへ変換する()
-        .align_size_within_rect(前回の大きさ.unwrap_or(egui::Vec2::ZERO), 範囲)
 }

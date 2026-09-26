@@ -10,6 +10,7 @@ pub mod glyph;
 pub mod image;
 pub mod output;
 pub mod overlay;
+pub mod overlay_idle;
 pub mod range_band;
 pub mod range_frame;
 
