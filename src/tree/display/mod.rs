@@ -4,6 +4,7 @@ mod external_link;
 mod image;
 mod image_source;
 mod notice;
+mod notice_item;
 mod progress_bar;
 mod spinner;
 mod text;
