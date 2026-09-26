@@ -93,3 +93,7 @@ APIの正本は rustdoc である。`cargo doc --open` で読む。公開APIに�
 単独クローンでも `cargo test` が通る自己完結の定義を保つ。GameScriptingTheory は導入の経緯から Git サブモジュールとして埋めており、上の文書の手順の対象外である。
 
 利用例: [GameScriptingTheory](https://github.com/megaDenryu/GameScriptingTheory) の `crates/devtool`（開発ツールGUI）。
+
+## ライセンス
+
+MIT License で配布する(本文は [LICENSE](LICENSE))。著作権者は megaDenryu である。
