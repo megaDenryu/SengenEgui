@@ -103,3 +103,41 @@ fn 修飾キーが余分に付いた押下では発行されない() {
     );
     assert_eq!(正しい押下, vec![応答::保存した]);
 }
+
+/// キー操作をボタンより先に置く。egui はボタンを描くときに Space の押下を読むため、先に描いたキー操作が消費しておく。
+fn ボタンと単独キー() -> ノード<応答> {
+    縦積み(子![
+        キー操作(キーの組::単独(egui::Key::Space), 応答::押した),
+        sengen_egui::ボタン("押す", 応答::文字を変えた("ボタン".to_string())),
+    ])
+    .into()
+}
+
+#[test]
+fn ボタンにフォーカスがあっても空白キーの組を見張り_ボタンは押されない() {
+    let eguiの本体 = egui::Context::default();
+    assert!(common::描画する(&eguiの本体, vec![], &ボタンと単独キー).is_empty());
+    let タブ = vec![common::キー押下(egui::Key::Tab, egui::Modifiers::NONE)];
+    assert!(common::描画する(&eguiの本体, タブ, &ボタンと単独キー).is_empty());
+    assert!(
+        eguiの本体.memory(|記憶| 記憶.focused()).is_some(),
+        "Tab でボタンにフォーカスが移る"
+    );
+    let 空白 = vec![common::キー押下(
+        egui::Key::Space,
+        egui::Modifiers::NONE,
+    )];
+    let mut 集めた = common::描画する(&eguiの本体, 空白, &ボタンと単独キー);
+    集めた.extend(common::描画する(&eguiの本体, vec![], &ボタンと単独キー));
+    assert_eq!(集めた, vec![応答::押した]);
+}
+
+#[test]
+fn タブで入力欄へフォーカスを移した直後の打鍵から入力欄に任せる() {
+    let eguiの本体 = egui::Context::default();
+    assert!(common::描画する(&eguiの本体, vec![], &入力欄と単独キー).is_empty());
+    let タブ = vec![common::キー押下(egui::Key::Tab, egui::Modifiers::NONE)];
+    assert!(common::描画する(&eguiの本体, タブ, &入力欄と単独キー).is_empty());
+    let 打鍵 = vec![common::キー押下(egui::Key::A, egui::Modifiers::NONE)];
+    assert!(common::描画する(&eguiの本体, 打鍵, &入力欄と単独キー).is_empty());
+}
