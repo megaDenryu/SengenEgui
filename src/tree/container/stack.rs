@@ -1,11 +1,13 @@
 //! 縦積み・横並び・折り返す横並び。子を並べる向きだけが違うので1つの型で持つ。
 //! 横の並びは egui の `horizontal` と同じく、行の初期高さを操作部品の高さで確保してから並べる。
+//! 横並びで1つの子に残りの幅を渡す指定は `stack_remaining.rs` が描く。
 
 use std::rc::Rc;
 
 use crate::measure::論理画素;
 use crate::style::スタイル;
 use crate::tree::container::layout::{寄せ, 積む向き};
+use crate::tree::container::stack_remaining::残りの幅を渡して描く;
 use crate::tree::{ノード, 子を順に描画する};
 
 /// 積み型とは、子を縦または横に順に並べる容器の記述のことである。
@@ -17,6 +19,7 @@ pub struct 積み型<M> {
     有効指定: bool,
     幅指定: Option<論理画素>,
     最小幅指定: Option<論理画素>,
+    残りの幅を渡す子: Option<usize>,
 }
 
 impl<M> 積み型<M> {
@@ -29,6 +32,7 @@ impl<M> 積み型<M> {
             有効指定: true,
             幅指定: None,
             最小幅指定: None,
+            残りの幅を渡す子: None,
         }
     }
 
@@ -62,6 +66,14 @@ impl<M> 積み型<M> {
         self
     }
 
+    /// 横並びで、番号の子(0から数える)に、その後ろの子を置いた残りの幅を渡す。子は左から右へ置く順に描くため、
+    /// Tab キーでフォーカスが移る順も見えている並びと同じになる。子の側は、渡された幅いっぱいに広がる部品にする
+    /// (一行テキスト入力の `幅いっぱい` 等)。縦積みと折り返す横並びでは効かない。
+    pub fn 残りの幅を渡す(mut self, 子の番号: usize) -> Self {
+        self.残りの幅を渡す子 = Some(子の番号);
+        self
+    }
+
     /// 並びの幅の下限を指定する。
     pub fn 最小幅(mut self, 幅: 論理画素) -> Self {
         self.最小幅指定 = Some(幅);
@@ -92,7 +104,12 @@ impl<M: Clone> 積み型<M> {
             if let Some(幅) = self.最小幅指定 {
                 内側.set_min_width(幅.eguiへ渡す値());
             }
-            子を順に描画する(&self.子一覧, 内側, 発行した応答);
+            match (self.向き, self.残りの幅を渡す子) {
+                (積む向き::横, Some(番号)) => {
+                    残りの幅を渡して描く(&self.子一覧, 番号, 内側, 発行した応答)
+                }
+                _ => 子を順に描画する(&self.子一覧, 内側, 発行した応答),
+            }
         };
         match self.向き.行の初期の大きさ(ui) {
             None => ui.with_layout(配置, 中身を描く).response,
@@ -116,6 +133,7 @@ impl<M: 'static> 積み型<M> {
             有効指定: self.有効指定,
             幅指定: self.幅指定,
             最小幅指定: self.最小幅指定,
+            残りの幅を渡す子: self.残りの幅を渡す子,
         }
     }
 }

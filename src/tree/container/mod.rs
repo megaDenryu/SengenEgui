@@ -22,6 +22,7 @@ mod panel_side;
 mod panel_size;
 mod scroll;
 mod stack;
+mod stack_remaining;
 mod tabs;
 mod virtual_list;
 mod visible_rows;
