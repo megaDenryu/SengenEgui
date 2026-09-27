@@ -9,6 +9,10 @@
 
 use crate::tree::ノード;
 
+/// 測るための見えない Ui を置く位置を、画面の上へずらす量。測るために描いた部品がマウスの下に来て、
+/// 本物の部品のマウスの乗り方を妨げないためである(見えない Ui の部品は押せないが、マウスが乗っていることは記録される)。
+const 画面の外へずらす量: f32 = 1.0e6;
+
 /// 子を左から右へ描き、番号の子(0から数える)には、後ろの子を置いた残りの幅を渡す。
 pub(super) fn 残りの幅を渡して描く<M: Clone>(
     子一覧: &[ノード<M>],
@@ -33,7 +37,7 @@ pub(super) fn 残りの幅を渡して描く<M: Clone>(
     }
 }
 
-/// 後ろの子を見えない子の Ui へ描いて、渡す子との間隔を含めた幅を測る。見えない Ui は親の並びの位置を進めない。
+/// 後ろの子を、画面の外に置いた見えない子の Ui へ描いて、渡す子との間隔を含めた幅を測る。見えない Ui は親の並びの位置を進めない。
 fn 後ろの子の幅を測る<M: Clone>(後ろの子: &[ノード<M>], ui: &mut egui::Ui) -> f32 {
     if 後ろの子.is_empty() {
         return 0.0;
@@ -41,7 +45,10 @@ fn 後ろの子の幅を測る<M: Clone>(後ろの子: &[ノード<M>], ui: &mut
     let mut 測る = ui.new_child(
         egui::UiBuilder::new()
             .id_salt("後ろの子の幅を測る")
-            .max_rect(ui.available_rect_before_wrap())
+            .max_rect(
+                ui.available_rect_before_wrap()
+                    .translate(egui::vec2(0.0, -画面の外へずらす量)),
+            )
             .layout(*ui.layout())
             .invisible(),
     );
