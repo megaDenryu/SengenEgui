@@ -8,6 +8,7 @@
 //! 範囲選択の地は、テーマが決めた色へ差し替えて描く（`選ばれた項目と範囲選択の色` 参照）。
 
 mod draft;
+mod width;
 
 use std::rc::Rc;
 
@@ -15,11 +16,12 @@ use crate::measure::論理画素;
 use crate::theme::選ばれた項目と範囲選択の色;
 use crate::tree::typing_parts::文字を打つ部品の集まり;
 use draft::下書きの置き場;
+use width::入力欄の幅;
 
 pub(super) struct テキスト入力の共通<M> {
     値: String,
     新しい値から応答を作る: Box<dyn Fn(String) -> M>,
-    幅指定: Option<論理画素>,
+    幅: 入力欄の幅,
     案内文指定: Option<String>,
     確定時識別子: Option<String>,
 }
@@ -31,14 +33,22 @@ impl<M> テキスト入力の共通<M> {
         Self {
             値,
             新しい値から応答を作る,
-            幅指定: None,
+            幅: 入力欄の幅::default(),
             案内文指定: None,
             確定時識別子: None,
         }
     }
 
     pub(super) fn 幅を指定する(&mut self, 幅: 論理画素) {
-        self.幅指定 = Some(幅);
+        self.幅.幅を指定する(幅);
+    }
+
+    pub(super) fn 使える幅いっぱいにする(&mut self) {
+        self.幅.使える幅いっぱいにする();
+    }
+
+    pub(super) fn 幅の下限を指定する(&mut self, 下限: 論理画素) {
+        self.幅.下限を指定する(下限);
     }
 
     pub(super) fn 案内文を指定する(&mut self, 案内: String) {
@@ -51,10 +61,7 @@ impl<M> テキスト入力の共通<M> {
 
     /// 幅と案内文を egui の部品へ写す。一行・複数行それぞれの固有の指定は呼び出し側が先に写す。
     fn 共通の指定を適用する<'a>(&self, 部品: egui::TextEdit<'a>) -> egui::TextEdit<'a> {
-        let mut 部品 = 部品;
-        if let Some(幅) = self.幅指定 {
-            部品 = 部品.desired_width(幅.eguiへ渡す値());
-        }
+        let mut 部品 = self.幅.部品へ写す(部品);
         if let Some(案内) = &self.案内文指定 {
             部品 = 部品.hint_text(案内.clone());
         }
@@ -112,7 +119,7 @@ impl<M: 'static> テキスト入力の共通<M> {
             新しい値から応答を作る: Box::new(move |値| {
                 応答を変換する(元の変更(値))
             }),
-            幅指定: self.幅指定,
+            幅: self.幅,
             案内文指定: self.案内文指定,
             確定時識別子: self.確定時識別子,
         }
