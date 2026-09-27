@@ -14,6 +14,28 @@ pub struct 画像型 {
     最大幅指定: Option<論理画素>,
     表示寸法指定: Option<表示寸法の収め方>,
     描く部分指定: Option<割合で表した矩形>,
+    向き: 描く向き,
+}
+
+/// 描く向きとは、画像をそのまま描くか、左右を入れ替えて（鏡に映したように）描くかの区別のことである。
+#[derive(Clone, Copy)]
+enum 描く向き {
+    そのまま,
+    左右を反転,
+}
+
+impl 描く向き {
+    /// egui の uv へ向きを写す。左右を反転するときは、uv の左端と右端を入れ替える。egui は uv の範囲を
+    /// 描く矩形へ線形に写すため、左端が右端より大きい uv は左右を入れ替えた絵になる。
+    fn uvへ写す(self, uv: egui::Rect) -> egui::Rect {
+        match self {
+            Self::そのまま => uv,
+            Self::左右を反転 => egui::Rect::from_min_max(
+                egui::pos2(uv.max.x, uv.min.y),
+                egui::pos2(uv.min.x, uv.max.y),
+            ),
+        }
+    }
 }
 
 /// 表示寸法の収め方とは、指定の幅と高さへ画像をどう合わせて描くかの区別のことである。
@@ -43,6 +65,7 @@ impl 画像型 {
             最大幅指定: None,
             表示寸法指定: None,
             描く部分指定: None,
+            向き: 描く向き::そのまま,
         }
     }
 
@@ -76,6 +99,13 @@ impl 画像型 {
         self
     }
 
+    /// 左右を入れ替えて（鏡に映したように）描く。描く部分を指定したときは、その部分の中で左右を入れ替える。
+    /// 描く大きさと押せる範囲は変わらない。
+    pub fn 左右を反転する(mut self) -> Self {
+        self.向き = 描く向き::左右を反転;
+        self
+    }
+
     pub(crate) fn 描画する(&self, ui: &mut egui::Ui) -> egui::Response {
         ui.add(self.egui部品を組む())
     }
@@ -88,7 +118,7 @@ impl 画像型 {
                 部分.描く部分の大きさを持つテクスチャ(テクスチャ.eguiへ渡す値()),
             ),
         }
-        .uv(部分.eguiのuvへ渡す値());
+        .uv(self.向き.uvへ写す(部分.eguiのuvへ渡す値()));
         if let Some(幅) = self.最大幅指定 {
             部品 = 部品.max_width(幅.eguiへ渡す値());
         }
