@@ -36,7 +36,7 @@ fn 条件は不成立なら無しになる() {
 
 #[test]
 fn 描画できて操作が無ければ応答は空になる() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || {
         縦積み(子![
             文字表示("見出し"),
@@ -45,16 +45,16 @@ fn 描画できて操作が無ければ応答は空になる() {
         ])
         .into()
     };
-    assert!(common::描画する(&文脈, vec![], &木を組む).is_empty());
+    assert!(common::描画する(&eguiの本体, vec![], &木を組む).is_empty());
 }
 
 #[test]
 fn クリックを合成するとボタンの応答が写された値で集まる() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || {
         let 木: ノード<u8> = 縦積み(子![ボタン("押す", 1u8).最小幅(画素(300.0))]).into();
         木.写す(|番号| 番号 + 10)
     };
-    let 集まり = common::左クリックする(&文脈, egui::pos2(30.0, 18.0), &木を組む);
+    let 集まり = common::左クリックする(&eguiの本体, egui::pos2(30.0, 18.0), &木を組む);
     assert_eq!(集まり, vec![11]);
 }

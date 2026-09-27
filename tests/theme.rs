@@ -21,9 +21,9 @@ fn 色だけのテーマ(基調: 明暗, 色: [Option<Color32>; 4]) -> テーマ
 }
 
 fn 適用した見た目(テーマ: テーマ) -> egui::Visuals {
-    let 文脈 = egui::Context::default();
-    テーマ.適用する(&文脈);
-    文脈.style().visuals.clone()
+    let eguiの本体 = egui::Context::default();
+    テーマ.適用する(&eguiの本体);
+    eguiの本体.style().visuals.clone()
 }
 
 /// 色の各成分が甲と乙の間にあり、しかも両端のどちらとも違うか。

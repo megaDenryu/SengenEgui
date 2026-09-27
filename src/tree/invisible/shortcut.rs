@@ -98,9 +98,9 @@ impl<M: Clone> キー操作型<M> {
         ui: &mut egui::Ui,
         発行した応答: &mut Vec<M>,
     ) -> egui::Response {
-        let 保留の鍵 = ui.make_persistent_id(("キー操作の保留", self.キーの組));
+        let 保留の識別子 = ui.make_persistent_id(("キー操作の保留", self.キーの組));
         let 保留していた = ui
-            .data_mut(|記憶| 記憶.remove_temp::<bool>(保留の鍵))
+            .data_mut(|記憶| 記憶.remove_temp::<bool>(保留の識別子))
             .is_some();
         if 保留していた {
             発行した応答.push(self.応答.clone());
@@ -116,7 +116,7 @@ impl<M: Clone> キー操作型<M> {
             None => 発行した応答.push(self.応答.clone()),
             Some(フォーカスの識別子) => {
                 ui.memory_mut(|記憶| 記憶.surrender_focus(フォーカスの識別子));
-                ui.data_mut(|記憶| 記憶.insert_temp(保留の鍵, true));
+                ui.data_mut(|記憶| 記憶.insert_temp(保留の識別子, true));
                 ui.ctx().request_repaint();
             }
         }

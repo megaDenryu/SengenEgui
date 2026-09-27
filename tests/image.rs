@@ -7,38 +7,47 @@ use sengen_egui::{ノード, 画像, 画素の組};
 
 #[test]
 fn 表示寸法の縦横比が画像と一致すれば指定の幅と高さにちょうど描く() {
-    let 文脈 = egui::Context::default();
-    let テクスチャ = 横長のテクスチャを登録する(&文脈);
+    let eguiの本体 = egui::Context::default();
+    let テクスチャ = 横長のテクスチャを登録する(&eguiの本体);
     let 木: ノード<()> = 画像(テクスチャ).表示寸法(画素の組(160.0, 80.0)).into();
-    assert_eq!(描画した矩形(&文脈, 木).size(), egui::vec2(160.0, 80.0));
+    assert_eq!(
+        描画した矩形(&eguiの本体, 木).size(),
+        egui::vec2(160.0, 80.0)
+    );
 }
 
 #[test]
 fn 表示寸法の縦横比が画像と違えば縦横比を保って枠に収まる大きさで描く() {
-    let 文脈 = egui::Context::default();
-    let テクスチャ = 横長のテクスチャを登録する(&文脈);
+    let eguiの本体 = egui::Context::default();
+    let テクスチャ = 横長のテクスチャを登録する(&eguiの本体);
     let 木: ノード<()> = 画像(テクスチャ).表示寸法(画素の組(200.0, 50.0)).into();
-    assert_eq!(描画した矩形(&文脈, 木).size(), egui::vec2(100.0, 50.0));
+    assert_eq!(
+        描画した矩形(&eguiの本体, 木).size(),
+        egui::vec2(100.0, 50.0)
+    );
 }
 
 #[test]
 fn 描く部分を指定すると縦横比は描く部分の縦横比で保つ() {
-    let 文脈 = egui::Context::default();
-    let テクスチャ = 横長のテクスチャを登録する(&文脈);
+    let eguiの本体 = egui::Context::default();
+    let テクスチャ = 横長のテクスチャを登録する(&eguiの本体);
     let 木: ノード<()> = 画像(テクスチャ)
         .描く部分(横の範囲(0.0, 0.5))
         .表示寸法(画素の組(100.0, 50.0))
         .into();
-    assert_eq!(描画した矩形(&文脈, 木).size(), egui::vec2(50.0, 50.0));
+    assert_eq!(描画した矩形(&eguiの本体, 木).size(), egui::vec2(50.0, 50.0));
 }
 
 #[test]
 fn 表示寸法へ引き伸ばす画像は指定の幅と高さちょうどに描く() {
-    let 文脈 = egui::Context::default();
-    let テクスチャ = 横長のテクスチャを登録する(&文脈);
+    let eguiの本体 = egui::Context::default();
+    let テクスチャ = 横長のテクスチャを登録する(&eguiの本体);
     let 木: ノード<()> = 画像(テクスチャ)
         .描く部分(横の範囲(0.25, 0.5))
         .表示寸法へ引き伸ばす(画素の組(200.0, 60.0))
         .into();
-    assert_eq!(描画した矩形(&文脈, 木).size(), egui::vec2(200.0, 60.0));
+    assert_eq!(
+        描画した矩形(&eguiの本体, 木).size(),
+        egui::vec2(200.0, 60.0)
+    );
 }

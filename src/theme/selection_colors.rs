@@ -15,18 +15,18 @@ pub(crate) struct 選ばれた項目と範囲選択の色 {
 }
 
 impl 選ばれた項目と範囲選択の色 {
-    fn 鍵() -> egui::Id {
+    fn 識別子() -> egui::Id {
         egui::Id::new("sengen_egui_選ばれた項目と範囲選択の色")
     }
 
     /// egui の一時記憶へ置く。テーマの適用から呼ぶ。
-    pub(super) fn 一時記憶へ置く(self, 文脈: &egui::Context) {
-        文脈.data_mut(|記憶域| 記憶域.insert_temp(Self::鍵(), self));
+    pub(super) fn 一時記憶へ置く(self, eguiの本体: &egui::Context) {
+        eguiの本体.data_mut(|記憶域| 記憶域.insert_temp(Self::識別子(), self));
     }
 
     /// egui の一時記憶から読む。テーマを適用していなければ、どちらも None の組を返す。
     pub(crate) fn 一時記憶から読む(ui: &egui::Ui) -> Self {
-        ui.data(|記憶域| 記憶域.get_temp::<Self>(Self::鍵()))
+        ui.data(|記憶域| 記憶域.get_temp::<Self>(Self::識別子()))
             .unwrap_or_default()
     }
 

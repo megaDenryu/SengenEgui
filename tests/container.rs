@@ -56,15 +56,15 @@ fn 全部の容器() -> ノード<応答> {
 
 #[test]
 fn 全部の容器が描画できて操作が無ければ応答は空になる() {
-    let 文脈 = egui::Context::default();
-    assert!(common::描画する(&文脈, vec![], &全部の容器).is_empty());
+    let eguiの本体 = egui::Context::default();
+    assert!(common::描画する(&eguiの本体, vec![], &全部の容器).is_empty());
     let 木を組む = || 全部の容器().写す(|応答| format!("{応答:?}"));
-    assert!(common::描画する(&文脈, vec![], &木を組む).is_empty());
+    assert!(common::描画する(&eguiの本体, vec![], &木を組む).is_empty());
 }
 
 #[test]
 fn タブ列で別の見出しを押すと番号の応答が出る() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || {
         縦積み(子![タブ列(
             vec!["甲".to_string(), "乙".to_string()],
@@ -73,21 +73,21 @@ fn タブ列で別の見出しを押すと番号の応答が出る() {
         )])
         .into()
     };
-    let 集まり = common::左クリックする(&文脈, egui::pos2(50.0, 18.0), &木を組む);
+    let 集まり = common::左クリックする(&eguiの本体, egui::pos2(50.0, 18.0), &木を組む);
     assert_eq!(集まり, vec![応答::タブを選んだ(1)]);
 }
 
 #[test]
 /// 覆いの当たり判定は前フレームの配置で決まるため、1フレーム描いてから押す。
 fn モーダルの外側を押すと閉じたらの応答が出る() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || {
         縦積み(子![
             モーダル("覆い", true, 子![文字表示("覆い")]).閉じたら(応答::閉じた)
         ])
         .into()
     };
-    assert!(common::描画する(&文脈, vec![], &木を組む).is_empty());
-    let 集まり = common::左クリックする(&文脈, egui::pos2(5.0, 5.0), &木を組む);
+    assert!(common::描画する(&eguiの本体, vec![], &木を組む).is_empty());
+    let 集まり = common::左クリックする(&eguiの本体, egui::pos2(5.0, 5.0), &木を組む);
     assert_eq!(集まり, vec![応答::閉じた]);
 }

@@ -54,14 +54,15 @@ fn main() -> std::process::ExitCode {
     let 結果 = eframe::run_native(
         "SengenEgui 見本帳",
         選択肢,
-        Box::new(|作成文脈| {
-            styles::画面のテーマ.適用する(&作成文脈.egui_ctx);
+        Box::new(|窓を作るときの情報| {
+            styles::画面のテーマ.適用する(&窓を作るときの情報.egui_ctx);
             let 候補 = 日本語フォントの候補::標準で入っている候補();
-            if let Err(失敗) = 候補.最初に読めたものを設定する(&作成文脈.egui_ctx)
+            if let Err(失敗) =
+                候補.最初に読めたものを設定する(&窓を作るときの情報.egui_ctx)
             {
                 eprintln!("{失敗}。表示が崩れる場合は OS へ日本語フォントを導入する");
             }
-            let eguiの本体 = &作成文脈.egui_ctx;
+            let eguiの本体 = &窓を作るときの情報.egui_ctx;
             let 見本の画素 = sample_texture::見本の画素のバイト列::ずらして作る(0);
             let 画像 = sengen_egui::差し替えられるテクスチャ::登録して作る(
                 eguiの本体,

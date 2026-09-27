@@ -64,10 +64,10 @@ impl テーマ {
         }
     }
 
-    /// テーマを egui の文脈へ適用する。起動時に1回呼ぶ。
+    /// テーマを egui の本体へ適用する。起動時に1回呼ぶ。
     /// egui の明暗の選択を基調へ固定し、OSの明暗設定に追従させない。
     /// 指定された色から導いた色も含めて、固定した側の見た目の全体へ書く。
-    pub fn 適用する(&self, 文脈: &egui::Context) {
+    pub fn 適用する(&self, eguiの本体: &egui::Context) {
         let eguiの明暗 = self.基調.eguiの明暗へ変換する();
         let mut 見た目 = match self.基調 {
             明暗::濃色 => egui::Visuals::dark(),
@@ -75,17 +75,19 @@ impl テーマ {
         };
         let 色の組 = self.配色();
         色の組.見た目へ割り当てる(&mut 見た目);
-        色の組.選ばれた項目と範囲選択の色().一時記憶へ置く(文脈);
+        色の組
+            .選ばれた項目と範囲選択の色()
+            .一時記憶へ置く(eguiの本体);
         self.角丸を見た目へ反映する(&mut 見た目);
         // 注意: set_visuals はその時点の明暗の側にだけ書く。起動時はOSの明暗が未着で濃色側になり、
         // 最初の描画でOSが淡色なら書いていない淡色側へ切り替わるため、明暗を固定してから明示の側へ書く。
-        文脈.set_theme(eguiの明暗);
-        文脈.set_visuals_of(eguiの明暗, 見た目);
-        文脈.style_mut_of(eguiの明暗, |様式| {
+        eguiの本体.set_theme(eguiの明暗);
+        eguiの本体.set_visuals_of(eguiの明暗, 見た目);
+        eguiの本体.style_mut_of(eguiの明暗, |様式| {
             self.間隔を様式へ反映する(様式)
         });
         if let Some(倍率) = self.表示倍率 {
-            文脈.set_zoom_factor(倍率.eguiへ渡す値());
+            eguiの本体.set_zoom_factor(倍率.eguiへ渡す値());
         }
     }
 

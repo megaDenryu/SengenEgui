@@ -26,9 +26,11 @@ impl<M> ドラッグ元型<M> {
         Self {
             識別子,
             子,
-            運びながら描画する: Rc::new(move |ui, 鍵, 中身を描く| {
-                ui.dnd_drag_source(鍵, 運ぶ値.clone(), |内側| 中身を描く(内側))
-                    .response
+            運びながら描画する: Rc::new(move |ui, 運ぶ部品の識別子, 中身を描く| {
+                ui.dnd_drag_source(運ぶ部品の識別子, 運ぶ値.clone(), |内側| {
+                    中身を描く(内側)
+                })
+                .response
             }),
         }
     }
@@ -40,8 +42,8 @@ impl<M: Clone> ドラッグ元型<M> {
         ui: &mut egui::Ui,
         発行した応答: &mut Vec<M>,
     ) -> egui::Response {
-        let 鍵 = ui.make_persistent_id(&self.識別子);
-        (self.運びながら描画する)(ui, 鍵, &mut |内側| {
+        let 運ぶ部品の識別子 = ui.make_persistent_id(&self.識別子);
+        (self.運びながら描画する)(ui, 運ぶ部品の識別子, &mut |内側| {
             self.子.描画する(内側, 発行した応答);
         })
     }

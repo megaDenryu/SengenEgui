@@ -24,9 +24,9 @@ fn 右クリックメニュー付きのボタン() -> ノード<応答> {
 
 #[test]
 fn 右クリックメニューを付けたボタンを左クリックするとボタンの応答が出る() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 集まり = common::左クリックする(
-        &文脈,
+        &eguiの本体,
         egui::pos2(30.0, 18.0),
         &右クリックメニュー付きのボタン,
     );
@@ -35,17 +35,17 @@ fn 右クリックメニューを付けたボタンを左クリックすると�
 
 #[test]
 fn 右クリックで開いたメニューの項目を押すと項目の応答が出る() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 位置 = egui::pos2(30.0, 18.0);
     let 開いた = common::クリックする(
-        &文脈,
+        &eguiの本体,
         位置,
         egui::PointerButton::Secondary,
         &右クリックメニュー付きのボタン,
     );
     assert!(開いた.is_empty(), "{開いた:?}");
     let 選んだ = common::左クリックする(
-        &文脈,
+        &eguiの本体,
         egui::pos2(位置.x + 12.0, 位置.y + 14.0),
         &右クリックメニュー付きのボタン,
     );
@@ -54,7 +54,7 @@ fn 右クリックで開いたメニューの項目を押すと項目の応答�
 
 #[test]
 fn 説明とドラッグ元と落とし先は描画できて操作が無ければ応答は空になる() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || {
         縦積み(子![
             文字表示("見出し").説明("説明の文"),
@@ -63,14 +63,14 @@ fn 説明とドラッグ元と落とし先は描画できて操作が無けれ�
         ])
         .into()
     };
-    assert!(common::描画する(&文脈, vec![], &木を組む).is_empty());
+    assert!(common::描画する(&eguiの本体, vec![], &木を組む).is_empty());
     let 木を組む = || 木を組む().写す(|応答| format!("{応答:?}"));
-    assert!(common::描画する(&文脈, vec![], &木を組む).is_empty());
+    assert!(common::描画する(&eguiの本体, vec![], &木を組む).is_empty());
 }
 
 #[test]
 fn キーの組が押されたフレームだけキー操作の応答が出る() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || {
         縦積み(子![キー操作(
             キーの組::生成する(egui::Modifiers::COMMAND, egui::Key::S),
@@ -78,7 +78,7 @@ fn キーの組が押されたフレームだけキー操作の応答が出る()
         )])
         .into()
     };
-    assert!(common::描画する(&文脈, vec![], &木を組む).is_empty());
+    assert!(common::描画する(&eguiの本体, vec![], &木を組む).is_empty());
     let 押下 = egui::Event::Key {
         key: egui::Key::S,
         physical_key: None,
@@ -87,7 +87,7 @@ fn キーの組が押されたフレームだけキー操作の応答が出る()
         modifiers: egui::Modifiers::COMMAND,
     };
     assert_eq!(
-        common::描画する(&文脈, vec![押下], &木を組む),
+        common::描画する(&eguiの本体, vec![押下], &木を組む),
         vec![応答::保存した]
     );
 }

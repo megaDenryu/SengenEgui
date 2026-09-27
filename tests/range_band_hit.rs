@@ -12,8 +12,8 @@ fn 押して掴んだもの(
     点: egui::Pos2,
     木を組む: &dyn Fn() -> ノード<区間の帯の操作>,
 ) -> Option<区間の帯の掴んだもの> {
-    let 文脈 = egui::Context::default();
-    let 集まり = common::左クリックする(&文脈, 点, 木を組む);
+    let eguiの本体 = egui::Context::default();
+    let 集まり = common::左クリックする(&eguiの本体, 点, 木を組む);
     集まり.first().map(|操作| match 操作 {
         区間の帯の操作::掴み始めた {
             掴んだもの, ..

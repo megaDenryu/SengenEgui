@@ -3,16 +3,20 @@
 use sengen_egui::{ノード, 割合, 割合で表した矩形};
 
 /// 幅64・高さ32の単色のテクスチャを登録する。
-pub fn 横長のテクスチャを登録する(文脈: &egui::Context) -> egui::TextureHandle {
+pub fn 横長のテクスチャを登録する(
+    eguiの本体: &egui::Context
+) -> egui::TextureHandle {
     let 画像 = egui::ColorImage::filled([64, 32], egui::Color32::GRAY);
-    文脈.load_texture("横長", 画像, egui::TextureOptions::NEAREST)
+    eguiの本体.load_texture("横長", 画像, egui::TextureOptions::NEAREST)
 }
 
 /// 木を1フレーム描画し、木の描画した範囲の矩形を返す。
-pub fn 描画した矩形<M: Clone>(文脈: &egui::Context, 木: ノード<M>) -> egui::Rect {
+pub fn 描画した矩形<M: Clone>(
+    eguiの本体: &egui::Context, 木: ノード<M>
+) -> egui::Rect {
     let mut 矩形 = egui::Rect::NOTHING;
-    let _ = 文脈.run(egui::RawInput::default(), |文脈| {
-        egui::CentralPanel::default().show(文脈, |ui| {
+    let _ = eguiの本体.run(egui::RawInput::default(), |eguiの本体| {
+        egui::CentralPanel::default().show(eguiの本体, |ui| {
             矩形 = 木.描画する(ui, &mut Vec::new()).rect;
         });
     });

@@ -22,13 +22,13 @@ pub(super) struct 取り出した下書き {
 
 /// 下書きの置き場とは、識別子で決まる egui の一時記憶の中の1つの場所のことである。
 pub(super) struct 下書きの置き場 {
-    鍵: egui::Id,
+    記憶の識別子: egui::Id,
 }
 
 impl 下書きの置き場 {
     pub(super) fn 新規(ui: &egui::Ui, 識別子: &str) -> Self {
         Self {
-            鍵: ui.make_persistent_id(識別子),
+            記憶の識別子: ui.make_persistent_id(識別子),
         }
     }
 
@@ -37,7 +37,7 @@ impl 下書きの置き場 {
         &self, ui: &egui::Ui, 現在の値: &str
     ) -> 取り出した下書き {
         let 現在のフレーム = ui.ctx().cumulative_frame_nr();
-        ui.data(|記憶| 記憶.get_temp::<下書き>(self.鍵))
+        ui.data(|記憶| 記憶.get_temp::<下書き>(self.記憶の識別子))
             .filter(|下書き| 下書き.最後に描画したフレーム + 1 >= 現在のフレーム)
             .filter(|下書き| 下書き.元の値 == 現在の値)
             .map_or_else(
@@ -66,10 +66,10 @@ impl 下書きの置き場 {
             最後に描画したフレーム: ui.ctx().cumulative_frame_nr(),
             フォーカスを持っていた: フォーカスを持っている,
         };
-        ui.data_mut(|記憶| 記憶.insert_temp(self.鍵, 下書き));
+        ui.data_mut(|記憶| 記憶.insert_temp(self.記憶の識別子, 下書き));
     }
 
     pub(super) fn 捨てる(&self, ui: &egui::Ui) {
-        ui.data_mut(|記憶| 記憶.remove::<下書き>(self.鍵));
+        ui.data_mut(|記憶| 記憶.remove::<下書き>(self.記憶の識別子));
     }
 }

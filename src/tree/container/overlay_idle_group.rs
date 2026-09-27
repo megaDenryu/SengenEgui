@@ -17,21 +17,21 @@ use crate::tree::container::overlay_idle_pointer::重ねた子の矩形;
 /// 同じ組の子には同じ指定を渡す。
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct ポインタが止まると隠す組 {
-    記憶の鍵: egui::Id,
+    記憶の識別子: egui::Id,
 }
 
 impl ポインタが止まると隠す組 {
     /// 組の名から組を作る。同じ名から作った組を指定した子が、同じ組に入る。
     pub fn 作成する(組の名: &str) -> Self {
         Self {
-            記憶の鍵: egui::Id::new(("ポインタが止まると隠す組", 組の名)),
+            記憶の識別子: egui::Id::new(("ポインタが止まると隠す組", 組の名)),
         }
     }
 
     /// 組を指定しない子の、その子1つだけの組。
-    pub(super) fn 子1つだけの組(子の鍵: egui::Id) -> Self {
+    pub(super) fn 子1つだけの組(子の識別子: egui::Id) -> Self {
         Self {
-            記憶の鍵: 子の鍵.with("ポインタが止まると隠す組"),
+            記憶の識別子: 子の識別子.with("ポインタが止まると隠す組"),
         }
     }
 
@@ -43,7 +43,7 @@ impl ポインタが止まると隠す組 {
         矩形: 重ねた子の矩形,
     ) -> bool {
         let 今の回 = ui.ctx().cumulative_pass_nr();
-        let 記憶 = ui.data(|記憶域| 記憶域.get_temp::<組の記憶>(self.記憶の鍵));
+        let 記憶 = ui.data(|記憶域| 記憶域.get_temp::<組の記憶>(self.記憶の識別子));
         let 新しい記憶 = match 記憶 {
             Some(mut 記憶) if 記憶.決めた回 == 今の回 => {
                 記憶.矩形一覧.push(矩形);
@@ -54,7 +54,7 @@ impl ポインタが止まると隠す組 {
             }
         };
         let 出すか = 新しい記憶.出し入れ.出すか();
-        ui.data_mut(|記憶域| 記憶域.insert_temp(self.記憶の鍵, 新しい記憶));
+        ui.data_mut(|記憶域| 記憶域.insert_temp(self.記憶の識別子, 新しい記憶));
         出すか
     }
 }

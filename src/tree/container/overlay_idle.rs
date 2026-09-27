@@ -66,13 +66,13 @@ impl ポインタが止まると隠す指定 {
     pub(super) fn 出すかを決める(
         self,
         ui: &egui::Ui,
-        鍵: egui::Id,
+        識別子: egui::Id,
         下地の矩形: egui::Rect,
         子の矩形: egui::Rect,
     ) -> bool {
         let 組 = self
             .組
-            .unwrap_or_else(|| ポインタが止まると隠す組::子1つだけの組(鍵));
+            .unwrap_or_else(|| ポインタが止まると隠す組::子1つだけの組(識別子));
         let 矩形 = 重ねた子の矩形 {
             下地: 下地の矩形,
             子: 子の矩形,

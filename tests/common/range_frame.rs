@@ -31,17 +31,17 @@ pub fn 枠を重ねた木(
         .into()
 }
 
-pub fn テクスチャを登録する(文脈: &egui::Context) -> egui::TextureHandle {
+pub fn テクスチャを登録する(eguiの本体: &egui::Context) -> egui::TextureHandle {
     let 画像 = egui::ColorImage::filled([100, 50], egui::Color32::GRAY);
-    文脈.load_texture("範囲枠の下地", 画像, egui::TextureOptions::NEAREST)
+    eguiの本体.load_texture("範囲枠の下地", 画像, egui::TextureOptions::NEAREST)
 }
 
 /// 画像の左上の画面上の位置。中央パネルの内余白は最初の配置から読み取り、部品が画像の周りに確保する
 /// 余白を足す。
-pub fn 画像の左上(文脈: &egui::Context) -> egui::Pos2 {
+pub fn 画像の左上(eguiの本体: &egui::Context) -> egui::Pos2 {
     let mut 左上 = egui::Pos2::ZERO;
-    let _ = 文脈.run(egui::RawInput::default(), |文脈| {
-        egui::CentralPanel::default().show(文脈, |ui| 左上 = ui.cursor().min);
+    let _ = eguiの本体.run(egui::RawInput::default(), |eguiの本体| {
+        egui::CentralPanel::default().show(eguiの本体, |ui| 左上 = ui.cursor().min);
     });
     左上 + egui::Vec2::splat(範囲枠付き画像の周りの余白.eguiへ渡す値())
 }

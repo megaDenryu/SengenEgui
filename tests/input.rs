@@ -52,22 +52,22 @@ fn 全部の入力部品() -> ノード<応答> {
 
 #[test]
 fn 全部の入力部品が描画できて操作が無ければ応答は空になる() {
-    let 文脈 = egui::Context::default();
-    assert!(common::描画する(&文脈, vec![], &全部の入力部品).is_empty());
+    let eguiの本体 = egui::Context::default();
+    assert!(common::描画する(&eguiの本体, vec![], &全部の入力部品).is_empty());
 }
 
 #[test]
 fn 写した木でも描画できる() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || 全部の入力部品().写す(|応答| format!("{応答:?}"));
-    assert!(common::描画する(&文脈, vec![], &木を組む).is_empty());
+    assert!(common::描画する(&eguiの本体, vec![], &木を組む).is_empty());
 }
 
 #[test]
 fn スライダーの軌道を押すと新しい値の応答が出る() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || 縦積み(子![スライダー(0, 0..=100, 応答::数を変えた)]).into();
-    let 集まり = common::左クリックする(&文脈, egui::pos2(58.0, 18.0), &木を組む);
+    let 集まり = common::左クリックする(&eguiの本体, egui::pos2(58.0, 18.0), &木を組む);
     assert!(
         集まり
             .iter()
@@ -78,7 +78,7 @@ fn スライダーの軌道を押すと新しい値の応答が出る() {
 
 #[test]
 fn 選択欄を開いて項目を押すとその選択肢の応答が出る() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || {
         縦積み(子![選択欄(
             "欄",
@@ -90,16 +90,16 @@ fn 選択欄を開いて項目を押すとその選択肢の応答が出る() {
         )])
         .into()
     };
-    let 開いた = common::左クリックする(&文脈, egui::pos2(30.0, 18.0), &木を組む);
+    let 開いた = common::左クリックする(&eguiの本体, egui::pos2(30.0, 18.0), &木を組む);
     assert!(開いた.is_empty(), "{開いた:?}");
-    let 選んだ = common::左クリックする(&文脈, egui::pos2(30.0, 62.0), &木を組む);
+    let 選んだ = common::左クリックする(&eguiの本体, egui::pos2(30.0, 62.0), &木を組む);
     assert_eq!(選んだ, vec![応答::選んだ("乙")]);
 }
 
 #[test]
 fn 選択ボタンを押すと応答が出る() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || 縦積み(子![選択ボタン("乙", false, 応答::選んだ("乙"))]).into();
-    let 集まり = common::左クリックする(&文脈, egui::pos2(20.0, 18.0), &木を組む);
+    let 集まり = common::左クリックする(&eguiの本体, egui::pos2(20.0, 18.0), &木を組む);
     assert_eq!(集まり, vec![応答::選んだ("乙")]);
 }

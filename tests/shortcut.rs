@@ -36,10 +36,10 @@ fn 入力欄と保存の組() -> ノード<応答> {
 
 #[test]
 fn 入力欄にフォーカスがある間は単独のキーの組を発行せず文字が入力欄へ届く() {
-    let 文脈 = egui::Context::default();
-    assert!(common::左クリックする(&文脈, 入力欄の位置, &入力欄と単独キー).is_empty());
+    let eguiの本体 = egui::Context::default();
+    assert!(common::左クリックする(&eguiの本体, 入力欄の位置, &入力欄と単独キー).is_empty());
     let 入力中 = common::描画する(
-        &文脈,
+        &eguiの本体,
         vec![
             common::キー押下(egui::Key::A, egui::Modifiers::NONE),
             common::文字入力("a"),
@@ -47,16 +47,17 @@ fn 入力欄にフォーカスがある間は単独のキーの組を発行せ�
         &入力欄と単独キー,
     );
     assert!(入力中.is_empty(), "{入力中:?}");
-    let 確定 = common::左クリックする(&文脈, egui::pos2(400.0, 400.0), &入力欄と単独キー);
+    let 確定 =
+        common::左クリックする(&eguiの本体, egui::pos2(400.0, 400.0), &入力欄と単独キー);
     assert_eq!(確定, vec![応答::文字を変えた("値a".to_string())]);
 }
 
 #[test]
 fn フォーカスが無ければ単独のキーの組はその回に発行される() {
-    let 文脈 = egui::Context::default();
-    assert!(common::描画する(&文脈, vec![], &入力欄と単独キー).is_empty());
+    let eguiの本体 = egui::Context::default();
+    assert!(common::描画する(&eguiの本体, vec![], &入力欄と単独キー).is_empty());
     let 押下 = common::描画する(
-        &文脈,
+        &eguiの本体,
         vec![common::キー押下(egui::Key::A, egui::Modifiers::NONE)],
         &入力欄と単独キー,
     );
@@ -65,15 +66,17 @@ fn フォーカスが無ければ単独のキーの組はその回に発行さ�
 
 #[test]
 fn 修飾キーの組は入力欄の確定の後に発行される() {
-    let 文脈 = egui::Context::default();
-    assert!(common::左クリックする(&文脈, 入力欄の位置, &入力欄と保存の組).is_empty());
-    assert!(common::描画する(&文脈, vec![common::文字入力("a")], &入力欄と保存の組).is_empty());
+    let eguiの本体 = egui::Context::default();
+    assert!(common::左クリックする(&eguiの本体, 入力欄の位置, &入力欄と保存の組).is_empty());
+    assert!(
+        common::描画する(&eguiの本体, vec![common::文字入力("a")], &入力欄と保存の組).is_empty()
+    );
     let mut 集まり = common::描画する(
-        &文脈,
+        &eguiの本体,
         vec![common::キー押下(egui::Key::S, egui::Modifiers::CTRL)],
         &入力欄と保存の組,
     );
-    集まり.extend(common::描画する(&文脈, vec![], &入力欄と保存の組));
+    集まり.extend(common::描画する(&eguiの本体, vec![], &入力欄と保存の組));
     assert_eq!(
         集まり,
         vec![応答::文字を変えた("値a".to_string()), 応答::保存した]
@@ -82,10 +85,10 @@ fn 修飾キーの組は入力欄の確定の後に発行される() {
 
 #[test]
 fn 修飾キーが余分に付いた押下では発行されない() {
-    let 文脈 = egui::Context::default();
-    assert!(common::描画する(&文脈, vec![], &入力欄と保存の組).is_empty());
+    let eguiの本体 = egui::Context::default();
+    assert!(common::描画する(&eguiの本体, vec![], &入力欄と保存の組).is_empty());
     let 押下 = common::描画する(
-        &文脈,
+        &eguiの本体,
         vec![common::キー押下(
             egui::Key::S,
             egui::Modifiers::CTRL | egui::Modifiers::SHIFT,
@@ -94,7 +97,7 @@ fn 修飾キーが余分に付いた押下では発行されない() {
     );
     assert!(押下.is_empty(), "{押下:?}");
     let 正しい押下 = common::描画する(
-        &文脈,
+        &eguiの本体,
         vec![common::キー押下(egui::Key::S, egui::Modifiers::CTRL)],
         &入力欄と保存の組,
     );

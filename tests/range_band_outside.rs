@@ -17,8 +17,13 @@ fn ドラッグする(
     横の移動量: f32,
     木を組む: &dyn Fn() -> ノード<区間の帯の操作>,
 ) -> Vec<区間の帯の操作> {
-    let 文脈 = egui::Context::default();
-    common::drag::左ドラッグする(&文脈, 始点, 始点 + egui::vec2(横の移動量, 0.0), 木を組む)
+    let eguiの本体 = egui::Context::default();
+    common::drag::左ドラッグする(
+        &eguiの本体,
+        始点,
+        始点 + egui::vec2(横の移動量, 0.0),
+        木を組む,
+    )
 }
 
 fn 押して放す(

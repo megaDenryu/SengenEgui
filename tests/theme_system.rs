@@ -20,14 +20,14 @@ fn 動作環境の明暗が届いた後の見た目(
     テーマ: テーマ,
     動作環境の明暗: egui::Theme,
 ) -> egui::Visuals {
-    let 文脈 = egui::Context::default();
-    テーマ.適用する(&文脈);
+    let eguiの本体 = egui::Context::default();
+    テーマ.適用する(&eguiの本体);
     let 入力 = egui::RawInput {
         system_theme: Some(動作環境の明暗),
         ..Default::default()
     };
-    let _ = 文脈.run(入力, |_| {});
-    文脈.style().visuals.clone()
+    let _ = eguiの本体.run(入力, |_| {});
+    eguiの本体.style().visuals.clone()
 }
 
 #[test]

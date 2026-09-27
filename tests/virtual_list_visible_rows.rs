@@ -27,10 +27,10 @@ fn 見えた範囲の一覧(集まり: Vec<応答>) -> Vec<見えている行の
 
 #[test]
 fn 描画のたびに先頭から見えている行の範囲を1回だけ発する() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || 高さを限った一覧(100);
     for _ in 0..2 {
-        let 範囲の一覧 = 見えた範囲の一覧(common::描画する(&文脈, vec![], &木を組む));
+        let 範囲の一覧 = 見えた範囲の一覧(common::描画する(&eguiの本体, vec![], &木を組む));
         assert_eq!(範囲の一覧.len(), 1, "1フレームに1回だけ発する");
         let 範囲 = 範囲の一覧[0];
         assert_eq!(範囲.最初(), 0);
@@ -41,9 +41,9 @@ fn 描画のたびに先頭から見えている行の範囲を1回だけ発す�
 
 #[test]
 fn スクロールすると発する範囲が先へ進む() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || 高さを限った一覧(100);
-    let 最初の範囲 = 見えた範囲の一覧(common::描画する(&文脈, vec![], &木を組む))[0];
+    let 最初の範囲 = 見えた範囲の一覧(common::描画する(&eguiの本体, vec![], &木を組む))[0];
     let 転がす = vec![
         egui::Event::PointerMoved(egui::pos2(40.0, 40.0)),
         egui::Event::MouseWheel {
@@ -52,9 +52,9 @@ fn スクロールすると発する範囲が先へ進む() {
             modifiers: egui::Modifiers::default(),
         },
     ];
-    let mut 範囲 = 見えた範囲の一覧(common::描画する(&文脈, 転がす, &木を組む))[0];
+    let mut 範囲 = 見えた範囲の一覧(common::描画する(&eguiの本体, 転がす, &木を組む))[0];
     for _ in 0..60 {
-        範囲 = 見えた範囲の一覧(common::描画する(&文脈, vec![], &木を組む))[0];
+        範囲 = 見えた範囲の一覧(common::描画する(&eguiの本体, vec![], &木を組む))[0];
     }
     assert!(
         範囲.最初() > 最初の範囲.最初(),
@@ -64,14 +64,14 @@ fn スクロールすると発する範囲が先へ進む() {
 
 #[test]
 fn 写した後も見えている行の範囲を親の応答として発する() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || 高さを限った一覧(100).写す(|応答::見えた(範囲)| 範囲.最初());
-    assert_eq!(common::描画する(&文脈, vec![], &木を組む), vec![0]);
+    assert_eq!(common::描画する(&eguiの本体, vec![], &木を組む), vec![0]);
 }
 
 #[test]
 fn 行が1つも無ければ発しない() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || 高さを限った一覧(0);
-    assert!(common::描画する(&文脈, vec![], &木を組む).is_empty());
+    assert!(common::描画する(&eguiの本体, vec![], &木を組む).is_empty());
 }

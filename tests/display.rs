@@ -31,13 +31,13 @@ fn 全部の表示部品() -> ノード<()> {
 
 #[test]
 fn 全部の表示部品が描画できて応答は空になる() {
-    let 文脈 = egui::Context::default();
-    assert!(common::描画する(&文脈, vec![], &全部の表示部品).is_empty());
+    let eguiの本体 = egui::Context::default();
+    assert!(common::描画する(&eguiの本体, vec![], &全部の表示部品).is_empty());
 }
 
 #[test]
 fn 表示の部品は写しても表示のままである() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || 全部の表示部品().写す(|()| 1u8);
-    assert!(common::描画する(&文脈, vec![], &木を組む).is_empty());
+    assert!(common::描画する(&eguiの本体, vec![], &木を組む).is_empty());
 }

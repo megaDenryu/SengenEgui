@@ -42,10 +42,10 @@ impl 重ねる位置 {
     pub(super) fn 前回の大きさで置く矩形(
         self,
         ui: &egui::Ui,
-        大きさの鍵: egui::Id,
+        大きさの識別子: egui::Id,
         範囲: egui::Rect,
     ) -> egui::Rect {
-        let 前回の大きさ = ui.data(|記憶域| 記憶域.get_temp::<egui::Vec2>(大きさの鍵));
+        let 前回の大きさ = ui.data(|記憶域| 記憶域.get_temp::<egui::Vec2>(大きさの識別子));
         self.eguiの寄せへ変換する()
             .align_size_within_rect(前回の大きさ.unwrap_or(egui::Vec2::ZERO), 範囲)
     }

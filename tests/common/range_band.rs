@@ -36,10 +36,10 @@ pub struct 帯の上の点 {
 
 impl 帯の上の点 {
     /// 中央パネルの内余白を最初の配置から読み取る。
-    pub fn 読み取る(文脈: &egui::Context) -> Self {
+    pub fn 読み取る(eguiの本体: &egui::Context) -> Self {
         let mut 左上 = egui::Pos2::ZERO;
-        let _ = 文脈.run(egui::RawInput::default(), |文脈| {
-            egui::CentralPanel::default().show(文脈, |ui| 左上 = ui.cursor().min);
+        let _ = eguiの本体.run(egui::RawInput::default(), |eguiの本体| {
+            egui::CentralPanel::default().show(eguiの本体, |ui| 左上 = ui.cursor().min);
         });
         Self { 左上 }
     }

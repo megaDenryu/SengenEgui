@@ -18,16 +18,16 @@ fn 開いた覆い() -> ノード<応答> {
 
 #[test]
 fn escapeを押すと閉じたらの応答が1回だけ出る() {
-    let 文脈 = egui::Context::default();
-    assert!(common::描画する(&文脈, vec![], &開いた覆い).is_empty());
+    let eguiの本体 = egui::Context::default();
+    assert!(common::描画する(&eguiの本体, vec![], &開いた覆い).is_empty());
     let mut 集まり = common::描画する(
-        &文脈,
+        &eguiの本体,
         vec![common::キー押下(
             egui::Key::Escape,
             egui::Modifiers::NONE,
         )],
         &開いた覆い,
     );
-    集まり.extend(common::描画する(&文脈, vec![], &開いた覆い));
+    集まり.extend(common::描画する(&eguiの本体, vec![], &開いた覆い));
     assert_eq!(集まり, vec![応答::閉じた]);
 }

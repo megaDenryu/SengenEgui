@@ -11,9 +11,9 @@ fn ドラッグする(
     横の移動量: f32,
     木: fn() -> sengen_egui::ノード<区間の帯の操作>,
 ) -> Vec<区間の帯の操作> {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 終点 = 始点 + egui::vec2(横の移動量, 0.0);
-    common::drag::左ドラッグする(&文脈, 始点, 終点, &木)
+    common::drag::左ドラッグする(&eguiの本体, 始点, 終点, &木)
 }
 
 fn 点() -> 帯の上の点 {
@@ -78,8 +78,8 @@ fn 位置の印の頭を掴んで動かすと位置が変わる() {
 
 #[test]
 fn 帯の区間の外を押すと位置の印をそこへ移して掴み放すと同じ値を発する() {
-    let 文脈 = egui::Context::default();
-    let 集まり = common::左クリックする(&文脈, 点().帯の段(90.0), &区間と位置);
+    let eguiの本体 = egui::Context::default();
+    let 集まり = common::左クリックする(&eguiの本体, 点().帯の段(90.0), &区間と位置);
     let 掴んだもの = 区間の帯の掴んだもの::位置の印;
     assert_eq!(集まり.len(), 2, "{集まり:?}");
     assert!(
@@ -91,19 +91,19 @@ fn 帯の区間の外を押すと位置の印をそこへ移して掴み放す�
 
 #[test]
 fn 主ボタン以外のドラッグには反応しない() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 始点 = 点().帯の段(20.0);
     let 終点 = 始点 + egui::vec2(20.0, 0.0);
     let 右ボタン = egui::PointerButton::Secondary;
-    let 集まり = common::drag::ドラッグする(&文脈, 始点, 終点, 右ボタン, &区間と位置);
+    let 集まり = common::drag::ドラッグする(&eguiの本体, 始点, 終点, 右ボタン, &区間と位置);
     assert!(集まり.is_empty(), "{集まり:?}");
 }
 
 #[test]
 fn 写した木でも操作が写した応答で出る() {
-    let 文脈 = egui::Context::default();
+    let eguiの本体 = egui::Context::default();
     let 木を組む = || 区間と位置().写す(|操作| format!("{操作:?}"));
-    let 集まり = common::左クリックする(&文脈, 点().帯の段(90.0), &木を組む);
+    let 集まり = common::左クリックする(&eguiの本体, 点().帯の段(90.0), &木を組む);
     assert!(
         集まり.last().is_some_and(|文| 文.starts_with("放した")),
         "{集まり:?}"

@@ -23,8 +23,8 @@ impl<M> 落とし先型<M> {
     ) -> Self {
         Self {
             子,
-            受け取れる型が運ばれているか: Rc::new(|文脈| {
-                egui::DragAndDrop::has_payload_of_type::<運ぶ値>(文脈)
+            受け取れる型が運ばれているか: Rc::new(|eguiの本体| {
+                egui::DragAndDrop::has_payload_of_type::<運ぶ値>(eguiの本体)
             }),
             落とされた値から応答を作る: Box::new(move |反応| {
                 反応

@@ -10,23 +10,24 @@ use sengen_egui::{割合で表した矩形, 範囲枠の掴んだ部分, 範囲�
 
 #[test]
 fn 枠の外で始めたドラッグは操作を発しない() {
-    let 文脈 = egui::Context::default();
-    let テクスチャ = テクスチャを登録する(&文脈);
-    let 始点 = 画像の左上(&文脈) + egui::vec2(10.0, 10.0);
+    let eguiの本体 = egui::Context::default();
+    let テクスチャ = テクスチャを登録する(&eguiの本体);
+    let 始点 = 画像の左上(&eguiの本体) + egui::vec2(10.0, 10.0);
     let 終点 = 始点 + egui::vec2(30.0, 30.0);
-    let 集まり =
-        common::drag::左ドラッグする(&文脈, 始点, 終点, &|| 範囲枠の木(&テクスチャ));
+    let 集まり = common::drag::左ドラッグする(&eguiの本体, 始点, 終点, &|| {
+        範囲枠の木(&テクスチャ)
+    });
     assert!(集まり.is_empty(), "{集まり:?}");
 }
 
 #[test]
 fn 枠が画像の全体のとき画像の外側にある隅のつまみの半分も掴める() {
-    let 文脈 = egui::Context::default();
-    let テクスチャ = テクスチャを登録する(&文脈);
-    let 始点 = 画像の左上(&文脈) + egui::vec2(205.0, 105.0);
+    let eguiの本体 = egui::Context::default();
+    let テクスチャ = テクスチャを登録する(&eguiの本体);
+    let 始点 = 画像の左上(&eguiの本体) + egui::vec2(205.0, 105.0);
     let 終点 = 始点 + egui::vec2(-40.0, -20.0);
     let 木を組む = || 枠を重ねた木(&テクスチャ, 割合で表した矩形::全体);
-    let 集まり = common::drag::左ドラッグする(&文脈, 始点, 終点, &木を組む);
+    let 集まり = common::drag::左ドラッグする(&eguiの本体, 始点, 終点, &木を組む);
     let 掴んだ部分 = 範囲枠の掴んだ部分::右下の隅;
     assert_eq!(
         集まり.first(),
@@ -36,13 +37,13 @@ fn 枠が画像の全体のとき画像の外側にある隅のつまみの半�
 
 #[test]
 fn 右ボタンと中ボタンのドラッグは操作を発しない() {
-    let 文脈 = egui::Context::default();
-    let テクスチャ = テクスチャを登録する(&文脈);
-    let 始点 = 画像の左上(&文脈) + egui::vec2(100.0, 50.0);
+    let eguiの本体 = egui::Context::default();
+    let テクスチャ = テクスチャを登録する(&eguiの本体);
+    let 始点 = 画像の左上(&eguiの本体) + egui::vec2(100.0, 50.0);
     let 終点 = 始点 + egui::vec2(20.0, 10.0);
     for ボタン in [egui::PointerButton::Secondary, egui::PointerButton::Middle] {
         let 木を組む = || 範囲枠の木(&テクスチャ);
-        let 集まり = common::drag::ドラッグする(&文脈, 始点, 終点, ボタン, &木を組む);
+        let 集まり = common::drag::ドラッグする(&eguiの本体, 始点, 終点, ボタン, &木を組む);
         assert!(集まり.is_empty(), "{ボタン:?} {集まり:?}");
     }
 }

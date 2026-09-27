@@ -11,7 +11,7 @@ use crate::texture::差し替えられるテクスチャ;
 pub struct 登録したテクスチャの参照(egui::TextureHandle);
 
 impl 登録したテクスチャの参照 {
-    /// egui の部品へ渡すための持ち手。この口以外で egui の持ち手へ戻さない。
+    /// egui の部品へ渡すためのテクスチャの参照。この口以外で egui のテクスチャの参照へ戻さない。
     pub(crate) fn eguiへ渡す値(&self) -> &egui::TextureHandle {
         &self.0
     }

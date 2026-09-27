@@ -26,21 +26,21 @@ fn 出す木() -> ノード<応答> {
 
 #[test]
 fn フォーカスが外れたときだけ新しい値の応答が出る() {
-    let 文脈 = egui::Context::default();
-    assert!(common::左クリックする(&文脈, 入力欄の位置, &出す木).is_empty());
-    let 入力中 = common::描画する(&文脈, vec![common::文字入力("a")], &出す木);
+    let eguiの本体 = egui::Context::default();
+    assert!(common::左クリックする(&eguiの本体, 入力欄の位置, &出す木).is_empty());
+    let 入力中 = common::描画する(&eguiの本体, vec![common::文字入力("a")], &出す木);
     assert!(入力中.is_empty(), "{入力中:?}");
-    let 確定 = common::左クリックする(&文脈, 何も無い位置, &出す木);
+    let 確定 = common::左クリックする(&eguiの本体, 何も無い位置, &出す木);
     assert_eq!(確定, vec![応答::文字を変えた("値a".to_string())]);
 }
 
 #[test]
 fn escapeでフォーカスが外れたら下書きを捨てて応答を出さない() {
-    let 文脈 = egui::Context::default();
-    assert!(common::左クリックする(&文脈, 入力欄の位置, &出す木).is_empty());
-    assert!(common::描画する(&文脈, vec![common::文字入力("a")], &出す木).is_empty());
+    let eguiの本体 = egui::Context::default();
+    assert!(common::左クリックする(&eguiの本体, 入力欄の位置, &出す木).is_empty());
+    assert!(common::描画する(&eguiの本体, vec![common::文字入力("a")], &出す木).is_empty());
     let 取り消し = common::描画する(
-        &文脈,
+        &eguiの本体,
         vec![common::キー押下(
             egui::Key::Escape,
             egui::Modifiers::NONE,
@@ -48,20 +48,20 @@ fn escapeでフォーカスが外れたら下書きを捨てて応答を出さ�
         &出す木,
     );
     assert!(取り消し.is_empty(), "{取り消し:?}");
-    assert!(common::描画する(&文脈, vec![], &出す木).is_empty());
-    assert!(common::左クリックする(&文脈, 入力欄の位置, &出す木).is_empty());
-    assert!(common::左クリックする(&文脈, 何も無い位置, &出す木).is_empty());
+    assert!(common::描画する(&eguiの本体, vec![], &出す木).is_empty());
+    assert!(common::左クリックする(&eguiの本体, 入力欄の位置, &出す木).is_empty());
+    assert!(common::左クリックする(&eguiの本体, 何も無い位置, &出す木).is_empty());
 }
 
 #[test]
 fn 木から消えて再表示された入力欄は古い下書きを捨てる() {
-    let 文脈 = egui::Context::default();
-    assert!(common::左クリックする(&文脈, 入力欄の位置, &出す木).is_empty());
-    assert!(common::描画する(&文脈, vec![common::文字入力("a")], &出す木).is_empty());
+    let eguiの本体 = egui::Context::default();
+    assert!(common::左クリックする(&eguiの本体, 入力欄の位置, &出す木).is_empty());
+    assert!(common::描画する(&eguiの本体, vec![common::文字入力("a")], &出す木).is_empty());
     let 消す木 = || 入力欄のある木(false);
-    assert!(common::描画する(&文脈, vec![], &消す木).is_empty());
-    assert!(common::描画する(&文脈, vec![], &消す木).is_empty());
-    assert!(common::左クリックする(&文脈, 入力欄の位置, &出す木).is_empty());
-    let 確定 = common::左クリックする(&文脈, 何も無い位置, &出す木);
+    assert!(common::描画する(&eguiの本体, vec![], &消す木).is_empty());
+    assert!(common::描画する(&eguiの本体, vec![], &消す木).is_empty());
+    assert!(common::左クリックする(&eguiの本体, 入力欄の位置, &出す木).is_empty());
+    let 確定 = common::左クリックする(&eguiの本体, 何も無い位置, &出す木);
     assert!(確定.is_empty(), "{確定:?}");
 }
