@@ -1,5 +1,5 @@
 //! 見本帳。全部品を1画面に並べ、利用側と同じ書き方（糖衣ファクトリだけ）で組む。
-//! 素の egui を使うのは、この起動の部分（窓の作成・egui の本体をフォントの設定とテクスチャの登録へ渡すこと）だけである。
+//! 素の egui を使うのは、この起動の部分（ウィンドウの作成・egui の本体をフォントの設定とテクスチャの登録へ渡すこと）だけである。
 //! 起動: リポジトリルートで `cargo run -p sengen_egui --example gallery`
 //! （GameScriptingTheory では `cargo xtask ui-gallery`）。
 
@@ -54,15 +54,15 @@ fn main() -> std::process::ExitCode {
     let 結果 = eframe::run_native(
         "SengenEgui 見本帳",
         選択肢,
-        Box::new(|窓を作るときの情報| {
-            styles::画面のテーマ.適用する(&窓を作るときの情報.egui_ctx);
+        Box::new(|ウィンドウを作るときの情報| {
+            styles::画面のテーマ.適用する(&ウィンドウを作るときの情報.egui_ctx);
             let 候補 = 日本語フォントの候補::標準で入っている候補();
             if let Err(失敗) =
-                候補.最初に読めたものを設定する(&窓を作るときの情報.egui_ctx)
+                候補.最初に読めたものを設定する(&ウィンドウを作るときの情報.egui_ctx)
             {
                 eprintln!("{失敗}。表示が崩れる場合は OS へ日本語フォントを導入する");
             }
-            let eguiの本体 = &窓を作るときの情報.egui_ctx;
+            let eguiの本体 = &ウィンドウを作るときの情報.egui_ctx;
             let 見本の画素 = sample_texture::見本の画素のバイト列::ずらして作る(0);
             let 画像 = sengen_egui::差し替えられるテクスチャ::登録して作る(
                 eguiの本体,

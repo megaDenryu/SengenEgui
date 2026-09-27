@@ -56,5 +56,5 @@ pub fn 描き直しまでの時間(出力: &egui::FullOutput) -> Duration {
     出力
         .viewport_output
         .get(&egui::ViewportId::ROOT)
-        .map_or(Duration::MAX, |窓| 窓.repaint_delay)
+        .map_or(Duration::MAX, |ウィンドウ| ウィンドウ.repaint_delay)
 }

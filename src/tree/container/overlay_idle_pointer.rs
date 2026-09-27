@@ -25,7 +25,7 @@ impl 入力の時刻 {
 /// ポインタの様子とは、出し入れを決めるためにその回の入力から読み取った値の組のことである。
 pub(super) struct ポインタの様子 {
     pub(super) 今: 入力の時刻,
-    pub(super) 位置: Option<egui::Pos2>, // 窓の外へ出た後は無い
+    pub(super) 位置: Option<egui::Pos2>, // ウィンドウの外へ出た後は無い
     pub(super) 下地の上か: bool,
     pub(super) 下地の上で押したか: bool,
     pub(super) 子の上で押し始めて押し続けているか: bool,

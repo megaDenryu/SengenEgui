@@ -7,7 +7,7 @@ use std::rc::Rc;
 use crate::measure::縦横の論理画素;
 use crate::tree::{ノード, 子を順に描画する};
 
-/// ウィンドウ型とは、画面の上に浮かぶドラッグ可能な窓の記述のことである。
+/// ウィンドウ型とは、画面の上に浮かぶドラッグ可能なウィンドウの記述のことである。
 pub struct ウィンドウ型<M> {
     表題: String,
     開いている: bool,
@@ -76,19 +76,19 @@ impl<M: Clone> ウィンドウ型<M> {
             return ui.response();
         }
         let mut 開いたまま = true;
-        let mut 窓 = egui::Window::new(self.表題.clone())
+        let mut ウィンドウ = egui::Window::new(self.表題.clone())
             .resizable(self.大きさを変えられる指定)
             .collapsible(self.折り畳める指定);
         if self.閉じたら指定.is_some() {
-            窓 = 窓.open(&mut 開いたまま);
+            ウィンドウ = ウィンドウ.open(&mut 開いたまま);
         }
         if let Some(大きさ) = self.既定の大きさ指定 {
-            窓 = 窓.default_size(大きさ.eguiへ渡す値());
+            ウィンドウ = ウィンドウ.default_size(大きさ.eguiへ渡す値());
         }
         if let Some(位置) = self.既定の位置指定 {
-            窓 = 窓.default_pos(位置.eguiの位置へ渡す値());
+            ウィンドウ = ウィンドウ.default_pos(位置.eguiの位置へ渡す値());
         }
-        let 表示結果 = 窓.show(ui.ctx(), |内側| {
+        let 表示結果 = ウィンドウ.show(ui.ctx(), |内側| {
             子を順に描画する(&self.子一覧, 内側, 発行した応答)
         });
         if !開いたまま && let Some(応答) = &self.閉じたら指定 {
