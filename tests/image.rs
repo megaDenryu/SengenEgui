@@ -63,7 +63,7 @@ fn 描いた画像のuv(eguiの本体: &egui::Context, 木: ノード<()>) -> eg
         .shapes
         .iter()
         .find_map(|切り抜いた形| match &切り抜いた形.shape {
-            egui::Shape::Rect(矩形) => 矩形.brush.as_ref().map(|筆| 筆.uv),
+            egui::Shape::Rect(矩形) => 矩形.brush.as_ref().map(|塗り方| 塗り方.uv),
             _ => None,
         })
         .unwrap_or_else(|| panic!("テクスチャを貼った矩形が無い"))
