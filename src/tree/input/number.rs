@@ -6,6 +6,7 @@ use std::ops::RangeInclusive;
 use crate::theme::選ばれた項目と範囲選択の色;
 use crate::tree::input::erased::{型を消した入力型, 描画の結果};
 use crate::tree::input::入力の部品;
+use crate::tree::typing_parts::文字を打つ部品の集まり;
 use crate::tree::ノード;
 
 /// 数値入力型とは、範囲内の数をドラッグと直接入力で編集する部品の記述のことである。
@@ -94,6 +95,8 @@ impl<M, 数: egui::emath::Numeric> 数値入力型<M, 数> {
         }
         let 反応 = 選ばれた項目と範囲選択の色::一時記憶から読む(ui)
             .範囲選択の地を差し替えて描く(ui, 部品);
+        // 数値入力はフォーカスを持つ間、直接入力の欄になるため、文字を打つ部品として知らせる。
+        文字を打つ部品の集まり::知らせる(ui.ctx(), &反応);
         // 直接入力の編集中は、値が変わらなくても文字の変更で egui が変更の印を付けるため、値そのものも比べる。
         let 値が変わった = 反応.changed() && 値 != self.値;
         let mut 発行する応答: Vec<M> = 値が変わった

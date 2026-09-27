@@ -25,6 +25,7 @@ pub mod input;
 pub mod invisible;
 mod map;
 mod node;
+pub(crate) mod typing_parts;
 
 pub use node::ノード;
 
