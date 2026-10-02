@@ -52,7 +52,11 @@ impl 選ばれた項目と範囲選択の色 {
         let Some(地) = self.範囲選択の地 else {
             return ui.add(部品);
         };
+        // 注意: 子の Ui は格子の升目であることを知らないため、折り返すかを親の Ui で決めてから渡す。
+        // 渡さないと、格子の列の最大幅を指定しても升目の文字が折り返さない。
+        let 折り返し = ui.wrap_mode();
         ui.scope(|内側| {
+            内側.style_mut().wrap_mode = Some(折り返し);
             内側.visuals_mut().selection.bg_fill = 地;
             内側.add(部品)
         })
