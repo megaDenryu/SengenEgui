@@ -13,6 +13,7 @@ pub struct 格子型<M> {
     縞模様指定: bool,
     列の間隔指定: Option<論理画素>,
     行の間隔指定: Option<論理画素>,
+    列の最大幅指定: Option<論理画素>,
 }
 
 impl<M> 格子型<M> {
@@ -24,6 +25,7 @@ impl<M> 格子型<M> {
             縞模様指定: false,
             列の間隔指定: None,
             行の間隔指定: None,
+            列の最大幅指定: None,
         }
     }
 
@@ -44,6 +46,12 @@ impl<M> 格子型<M> {
         self.行の間隔指定 = Some(間隔);
         self
     }
+
+    /// どの列の幅もこの幅を上限にする。升目の文字はこの幅で折り返す。指定しなければ文字を折り返さず、列は文字の幅まで広がる。
+    pub fn 列の最大幅(mut self, 幅: 論理画素) -> Self {
+        self.列の最大幅指定 = Some(幅);
+        self
+    }
 }
 
 impl<M: Clone> 格子型<M> {
@@ -59,10 +67,14 @@ impl<M: Clone> 格子型<M> {
             self.行の間隔指定
                 .map_or(既定の間隔.y, 論理画素::eguiへ渡す値),
         );
-        egui::Grid::new(self.識別子.clone())
+        let mut 格子 = egui::Grid::new(self.識別子.clone())
             .num_columns(self.列数)
             .striped(self.縞模様指定)
-            .spacing(間隔)
+            .spacing(間隔);
+        if let Some(幅) = self.列の最大幅指定 {
+            格子 = 格子.max_col_width(幅.eguiへ渡す値());
+        }
+        格子
             .show(ui, |内側| {
                 for (位置, 子) in self.子一覧.iter().enumerate() {
                     子.描画する(内側, 発行した応答);
@@ -86,6 +98,7 @@ impl<M: 'static> 格子型<M> {
             縞模様指定: self.縞模様指定,
             列の間隔指定: self.列の間隔指定,
             行の間隔指定: self.行の間隔指定,
+            列の最大幅指定: self.列の最大幅指定,
         }
     }
 }
