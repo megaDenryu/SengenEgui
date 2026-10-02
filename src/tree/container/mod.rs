@@ -13,6 +13,7 @@ mod panel;
 mod panel_axis_size;
 mod panel_side;
 mod panel_size;
+mod ratio_place;
 mod scroll;
 mod stack;
 mod stack_remaining;
@@ -33,6 +34,7 @@ pub use overlay::{
 };
 pub use panel::パネル型;
 pub use panel_side::パネルの位置;
+pub use ratio_place::割合の矩形へ置く型;
 pub use scroll::{スクロールの向き, スクロール型};
 pub use stack::積み型;
 pub use tabs::タブ列型;
@@ -70,6 +72,8 @@ pub enum 容器<M> {
     重ね(重ね型<M>),
     /// 指定の幅と高さをちょうど占める領域。
     大きさを決めた領域(大きさを決めた領域型<M>),
+    /// 子を容器の矩形に対する割合で表した矩形へ重ねて置く領域。
+    割合の矩形へ置く(割合の矩形へ置く型<M>),
 }
 
 impl<M: Clone> 容器<M> {
@@ -93,6 +97,7 @@ impl<M: Clone> 容器<M> {
             Self::使える大きさから組む(中身) => 中身.描画する(ui, 発行した応答),
             Self::重ね(中身) => 中身.描画する(ui, 発行した応答),
             Self::大きさを決めた領域(中身) => 中身.描画する(ui, 発行した応答),
+            Self::割合の矩形へ置く(中身) => 中身.描画する(ui, 発行した応答),
         }
     }
 }
@@ -111,3 +116,4 @@ impl<M: Clone> 容器<M> {
 ノードへ変換する!(容器, 容器::使える大きさから組む, 使える大きさから組む型<M>);
 ノードへ変換する!(容器, 容器::重ね, 重ね型<M>);
 ノードへ変換する!(容器, 容器::大きさを決めた領域, 大きさを決めた領域型<M>);
+ノードへ変換する!(容器, 容器::割合の矩形へ置く, 割合の矩形へ置く型<M>);

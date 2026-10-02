@@ -10,7 +10,9 @@ mod display;
 mod input;
 mod invisible;
 
-pub use area::{使える大きさから組む, 大きさを決めた領域, 重ねる};
+pub use area::{
+    使える大きさから組む, 割合の矩形へ置く, 大きさを決めた領域, 重ねる
+};
 pub use attach::{ドラッグ元, 落とし先};
 pub use container::{
     ウィンドウ, タブ列, パネル, メニュー, メニューバー, モーダル, 両方向スクロール,

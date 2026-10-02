@@ -14,6 +14,7 @@ mod player_clip;
 mod player_key;
 mod player_page;
 mod player_video;
+mod ratio_place_section;
 mod sample_clip;
 mod sample_frame;
 mod sample_player;

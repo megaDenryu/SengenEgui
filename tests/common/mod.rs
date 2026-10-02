@@ -13,6 +13,7 @@ pub mod overlay;
 pub mod overlay_idle;
 pub mod range_band;
 pub mod range_frame;
+pub mod ratio_place;
 
 use sengen_egui::ノード;
 
