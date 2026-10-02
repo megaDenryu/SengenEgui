@@ -11,6 +11,7 @@ mod display_page;
 mod input_page;
 mod panel_section;
 mod player_clip;
+mod player_key;
 mod player_page;
 mod player_video;
 mod sample_clip;
