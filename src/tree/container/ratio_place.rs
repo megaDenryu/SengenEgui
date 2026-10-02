@@ -47,21 +47,21 @@ impl<M: Clone> 割合の矩形へ置く型<M> {
         ui: &mut egui::Ui,
         発行した応答: &mut Vec<M>,
     ) -> egui::Response {
-        let (容器の矩形, 反応) =
+        let (容器の矩形, 確保した領域の応答) =
             ui.allocate_exact_size(self.寸法.eguiへ渡す値(), egui::Sense::hover());
         if let Some(色) = self.装飾値.背景色 {
             ui.painter().rect_filled(容器の矩形, 0.0, 色);
         }
         for (矩形, 子) in &self.子一覧 {
             let 子の矩形 = 矩形.画面の矩形へ写す(容器の矩形);
-            let 作り = egui::UiBuilder::new()
+            let 子の領域の設定 = egui::UiBuilder::new()
                 .max_rect(子の矩形)
                 .layout(egui::Layout::top_down(egui::Align::Min));
-            let mut 子の領域 = ui.new_child(作り);
+            let mut 子の領域 = ui.new_child(子の領域の設定);
             子の領域.set_clip_rect(子の矩形.intersect(ui.clip_rect()));
             子.描画する(&mut 子の領域, 発行した応答);
         }
-        反応
+        確保した領域の応答
     }
 }
 
