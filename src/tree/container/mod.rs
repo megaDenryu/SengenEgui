@@ -9,13 +9,6 @@ mod map;
 mod menu;
 mod modal;
 mod overlay;
-mod overlay_children;
-mod overlay_idle;
-mod overlay_idle_group;
-mod overlay_idle_memory;
-mod overlay_idle_pointer;
-mod overlay_place;
-mod overlay_position;
 mod panel;
 mod panel_axis_size;
 mod panel_side;
@@ -35,10 +28,9 @@ pub use grid::格子型;
 pub use layout::積む向き;
 pub use menu::{メニューバー型, メニュー型};
 pub use modal::モーダル型;
-pub use overlay::重ね型;
-pub use overlay_idle::ポインタが止まると隠す指定;
-pub use overlay_idle_group::ポインタが止まると隠す組;
-pub use overlay_position::重ねる位置;
+pub use overlay::{
+    ポインタが止まると隠す指定, ポインタが止まると隠す組, 重ねる位置, 重ね型
+};
 pub use panel::パネル型;
 pub use panel_side::パネルの位置;
 pub use scroll::{スクロールの向き, スクロール型};

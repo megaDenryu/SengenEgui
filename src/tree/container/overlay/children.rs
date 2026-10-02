@@ -5,8 +5,8 @@
 
 use std::rc::Rc;
 
+use super::place::重ねる置き方;
 use crate::measure::論理画素;
-use crate::tree::container::overlay_place::重ねる置き方;
 use crate::tree::ノード;
 
 /// 重ねる子の一覧とは、下地の上へ重ねる子と、その置き方の組を、書いた順に並べたもののことである。

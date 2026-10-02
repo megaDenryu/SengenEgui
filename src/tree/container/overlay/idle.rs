@@ -4,13 +4,13 @@
 //! 動画サイトの再生画面に揃え、子を出すのはポインタが下地の上で実際に動いたとき（同じ位置への移動の知らせは数えない）と、
 //! 下地の上で押したときと、指定のキーを押している間である。ポインタが子の上にあっても、止まれば時間が経って隠す。
 //! 子の上で押し始めたボタンを押し続けている間（つまみのドラッグ等）だけは隠さない。ポインタが下地の外へ出たら、すぐ隠す。
-//! 記憶は組ごとに egui の一時記憶に置く（`overlay_idle_group`）。動いたかの判定と次の記憶の規則は `overlay_idle_memory` が持つ。
+//! 記憶は組ごとに egui の一時記憶に置く（`idle_group`）。動いたかの判定と次の記憶の規則は `idle_memory` が持つ。
 
 use std::time::Duration;
 
-use crate::tree::container::overlay_idle_group::ポインタが止まると隠す組;
-use crate::tree::container::overlay_idle_memory::{出し入れの条件, 出し入れの記憶};
-use crate::tree::container::overlay_idle_pointer::{ポインタの様子, 重ねた子の矩形};
+use super::idle_group::ポインタが止まると隠す組;
+use super::idle_memory::{出し入れの条件, 出し入れの記憶};
+use super::idle_pointer::{ポインタの様子, 重ねた子の矩形};
 
 /// ポインタが止まると隠す指定とは、重ねる子を、下地の上でポインタが動いてから一定時間だけ出すときの条件のことである。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

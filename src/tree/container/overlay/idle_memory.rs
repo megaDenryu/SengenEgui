@@ -6,8 +6,8 @@
 
 use std::time::Duration;
 
+use super::idle_pointer::{ポインタの様子, 入力の時刻};
 use crate::measure::{画素, 論理画素};
-use crate::tree::container::overlay_idle_pointer::{ポインタの様子, 入力の時刻};
 
 /// ポインタが最後に動いたと数えた位置からこの距離以上離れたら、動いたと数える。
 const 動いたと数える距離: 論理画素 = 画素(3.0);

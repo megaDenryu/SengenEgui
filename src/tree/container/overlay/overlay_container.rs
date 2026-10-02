@@ -1,18 +1,18 @@
 //! 重ねる容器。下地の子を描いてから、その矩形の上へ別の子を重ねて描く。映像の上のボタンや、
 //! 半透明の覆いの上の案内のように、同じ場所に部品を重ねたいときに使う。
 //!
-//! 重ねる子の並びと識別子は `overlay_children` が、子を寄せ先へ描く手順は `overlay_place` が持つ。重ねる子は、識別子ごとに最初に出した1回だけ
+//! 重ねる子の並びと識別子は `children` が、子を寄せ先へ描く手順は `place` が持つ。重ねる子は、識別子ごとに最初に出した1回だけ
 //! 大きさを測るため見えず、押せない（描き直しを求めるため、人の目には1フレームである）。2回目以降は出した回から見えて押せる。
 //! egui は後に登録した部品を上として押下とドラッグを配るため、重ねる子は下地より優先して押される。
 
 use std::rc::Rc;
 
+use super::children::重ねる子の一覧;
+use super::idle::ポインタが止まると隠す指定;
+use super::place::重ねる置き方;
+use super::position::重ねる位置;
 use crate::measure::{画素, 論理画素};
 use crate::style::スタイル;
-use crate::tree::container::overlay_children::重ねる子の一覧;
-use crate::tree::container::overlay_idle::ポインタが止まると隠す指定;
-use crate::tree::container::overlay_place::重ねる置き方;
-use crate::tree::container::overlay_position::重ねる位置;
 use crate::tree::ノード;
 
 const 既定の端からの間隔: 論理画素 = 画素(8.0);
