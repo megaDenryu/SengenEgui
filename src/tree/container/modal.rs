@@ -80,7 +80,8 @@ impl<M: Clone> モーダル型<M> {
             - egui::Vec2::splat(2.0 * 間.eguiへ渡す値())
             - 枠の余白)
             .max(egui::Vec2::ZERO);
-        内側.set_max_width(内側.max_rect().width().min(収まる大きさ.x));
+        内側.set_max_width(収まる大きさ.x);
+        内側.set_max_height(収まる大きさ.y);
         egui::ScrollArea::vertical()
             .id_salt(format!("{}の中身", self.識別子))
             .max_height(収まる大きさ.y)
