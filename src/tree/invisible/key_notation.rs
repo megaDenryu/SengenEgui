@@ -47,11 +47,7 @@ impl キーの組 {
     /// 「Ctrl+Shift+Z」の形の表記にする。`表記から読む` で同じ組へ戻る(Ctrl と Command の区別だけは `修飾キー::COMMAND` にそろう)。
     pub fn 表記(self) -> String {
         let 修飾キー = self.修飾キー();
-        let 立っているか = [
-            修飾キー.command || 修飾キー.ctrl || 修飾キー.mac_cmd,
-            修飾キー.alt,
-            修飾キー.shift,
-        ];
+        let 立っているか = [修飾キー.command, 修飾キー.alt, 修飾キー.shift];
         let 前置き: String = 修飾キーの表記
             .iter()
             .zip(立っているか)
