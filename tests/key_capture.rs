@@ -29,16 +29,16 @@ fn 受け取りとエスケープのキー操作の木() -> ノード<応答> {
 
 #[test]
 fn 押していた修飾キーを含む組を受け取り_コントロールをコマンドにそろえる() {
-    let eguiの本体 = egui::Context::default();
-    let windowsのctrlとshift = egui::Modifiers {
+    let 画面描画の共有状態 = egui::Context::default();
+    let ウィンドウズでコントロールキーとシフトキーを押した修飾キーの状態 = egui::Modifiers {
         ctrl: true,
         command: true,
         shift: true,
         ..egui::Modifiers::NONE
     };
     let 集まり = common::描画する(
-        &eguiの本体,
-        vec![common::キー押下(egui::Key::Z, windowsのctrlとshift)],
+        &画面描画の共有状態,
+        vec![common::キー押下(egui::Key::Z, ウィンドウズでコントロールキーとシフトキーを押した修飾キーの状態)],
         &受け取りだけの木,
     );
     let コマンドとシフト = 修飾キー {
@@ -56,9 +56,9 @@ fn 押していた修飾キーを含む組を受け取り_コントロールを�
 
 #[test]
 fn 同じフレームの押下は最初の1つだけを受け取る() {
-    let eguiの本体 = egui::Context::default();
+    let 画面描画の共有状態 = egui::Context::default();
     let 集まり = common::描画する(
-        &eguiの本体,
+        &画面描画の共有状態,
         vec![
             common::キー押下(egui::Key::A, egui::Modifiers::NONE),
             common::キー押下(egui::Key::B, egui::Modifiers::NONE),
@@ -70,9 +70,9 @@ fn 同じフレームの押下は最初の1つだけを受け取る() {
 
 #[test]
 fn 受け取った押下は後に描画するキー操作へ渡さずエスケープも受け取る() {
-    let eguiの本体 = egui::Context::default();
+    let 画面描画の共有状態 = egui::Context::default();
     let 集まり = common::描画する(
-        &eguiの本体,
+        &画面描画の共有状態,
         vec![common::キー押下(
             egui::Key::Escape,
             egui::Modifiers::NONE,
@@ -84,22 +84,22 @@ fn 受け取った押下は後に描画するキー操作へ渡さずエスケ�
 
 #[test]
 fn 押し続けによる繰り返しの押下は受け取らない() {
-    let eguiの本体 = egui::Context::default();
+    let 画面描画の共有状態 = egui::Context::default();
     let 押下 = || vec![common::キー押下(egui::Key::A, egui::Modifiers::NONE)];
     assert_eq!(
-        common::描画する(&eguiの本体, 押下(), &受け取りだけの木),
+        common::描画する(&画面描画の共有状態, 押下(), &受け取りだけの木),
         vec![応答::受け取った(キーの組::単独(キー::A))]
     );
     // 離さずにもう一度押した事象は、egui が繰り返しの印を付ける。
-    assert!(common::描画する(&eguiの本体, 押下(), &受け取りだけの木).is_empty());
+    assert!(common::描画する(&画面描画の共有状態, 押下(), &受け取りだけの木).is_empty());
 }
 
 #[test]
 fn 写した受け取りは写した応答を発する() {
-    let eguiの本体 = egui::Context::default();
+    let 画面描画の共有状態 = egui::Context::default();
     let 写した木 = || 受け取りだけの木().写す(|応答| 応答::包んだ(Box::new(応答)));
     let 集まり = common::描画する(
-        &eguiの本体,
+        &画面描画の共有状態,
         vec![common::キー押下(egui::Key::T, egui::Modifiers::NONE)],
         &写した木,
     );
