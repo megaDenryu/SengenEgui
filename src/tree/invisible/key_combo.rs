@@ -26,8 +26,9 @@ impl キーの組 {
         Self::生成する(egui::Modifiers::NONE, キー)
     }
 
-    /// 組の修飾キー。Ctrl と Command は `修飾キー::COMMAND` にそろえてある。
-    pub(crate) const fn 修飾キー(self) -> egui::Modifiers {
+    /// 組の修飾キー。Ctrl と Command は `修飾キー::COMMAND` にそろえてある(`ctrl` と `mac_cmd` は立たない)。
+    /// 利用する側が、組と同じ押し方の入力を作るとき(試験で押下の事象を組み立てる等)に使う。
+    pub const fn 修飾キー(self) -> egui::Modifiers {
         self.0.modifiers
     }
 
