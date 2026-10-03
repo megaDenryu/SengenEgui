@@ -19,24 +19,8 @@ pub use operation::{区間の帯の掴んだもの, 区間の帯の操作};
 
 use crate::measure::{帯の値, 帯の全体の範囲, 論理画素};
 use crate::style::スタイル;
+use crate::tree::input::band_width::帯の幅;
 use hit::今の区間と位置;
-
-/// 帯の幅とは、区間の帯と時間の行の並びが横に占める幅をどう決めるかの区別のことである。
-#[derive(Clone, Copy)]
-pub(super) enum 帯の幅 {
-    使える幅いっぱい,
-    指定(論理画素),
-}
-
-impl 帯の幅 {
-    /// このフレームで横に占める幅。
-    pub(super) fn 占める幅(self, ui: &egui::Ui) -> f32 {
-        match self {
-            Self::使える幅いっぱい => ui.available_width(),
-            Self::指定(幅) => 幅.eguiへ渡す値(),
-        }
-    }
-}
 
 /// 区間の帯型とは、値の全体の範囲の上の区間と位置を1本の帯で見せ、ドラッグで動かす部品の記述のことである。
 pub struct 区間の帯型<M> {

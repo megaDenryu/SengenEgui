@@ -51,6 +51,18 @@ impl 帯の値の差 {
     }
 }
 
+impl 帯の値の差 {
+    // 基準の差に対するこの差の比。基準が0なら比が決まらないため None を返す。
+    pub(crate) fn に対する比(self, 基準: Self) -> Option<super::次元の無い比> {
+        super::次元の無い比::二つの量から求める(self.0, 基準.0)
+    }
+
+    // 比を掛けた差。
+    pub(crate) fn 比を掛ける(self, 比: super::次元の無い比) -> Self {
+        Self(self.0 * 比.倍精度の小数にする())
+    }
+}
+
 impl std::ops::Sub for 帯の値 {
     type Output = 帯の値の差;
     fn sub(self, 相手: Self) -> 帯の値の差 {

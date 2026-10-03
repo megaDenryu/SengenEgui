@@ -12,12 +12,14 @@ mod block;
 mod cursor;
 mod drag;
 mod draw;
+mod event;
 mod grab;
 mod hit;
 mod hold;
 mod hold_block;
 #[cfg(test)]
 mod hold_block_tests;
+mod hold_position;
 mod layout;
 mod operation;
 mod paint;
@@ -31,7 +33,7 @@ pub use operation::{位置の線の操作, 時間の塊の操作, 時間の塊�
 pub use row::時間の行型;
 pub use row_number::{時間の行の差, 時間の行の番号};
 
-use super::range_band::帯の幅;
+use super::band_width::帯の幅;
 use crate::measure::{帯の値, 帯の全体の範囲, 論理画素};
 use crate::style::スタイル;
 
@@ -99,7 +101,7 @@ impl<M, 鍵: 時間の塊の鍵> 時間の行の並び型<M, 鍵> {
     }
 
     /// 行の上で、どの塊にも当たらない所（塊の無い行を含む）を押したら、押した行の番号から応答を作って発する。
-    /// `何も無い所を押したら発する` と独立した口であり、両方を指定すると、行の上を押したときは両方の応答をその順に発する。
+    /// `何も無い所を押したら発する` と独立したメソッドであり、両方を指定すると、行の上を押したときは両方の応答をその順に発する。
     /// 時間の軸の領域は行の上ではないため、この応答を発さない。
     pub fn 行の何も無い所を押したら発する(
         mut self,

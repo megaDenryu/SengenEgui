@@ -30,20 +30,25 @@ impl ドラッグの段階 {
     }
 }
 
+// 掴んでいる間に置く記憶とは、部品が掴んでいる間フレームをまたいで egui の一時記憶に置く値の型が満たす条件のことである。
+// 一時記憶の識別子を作るための名前を、記憶の型ごとに関連定数として持つ。
+pub(in crate::tree::input) trait 掴んでいる間に置く記憶:
+    Clone + Send + Sync + 'static
+{
+    const 記憶の名前: &'static str;
+}
+
 // 掴んでいる間の記憶の置き場とは、部品が掴んでいる間の記憶を置く egui の一時記憶の識別子のことである。
 pub(in crate::tree::input) struct 掴んでいる間の記憶の置き場<記憶> {
     識別子: egui::Id,
     記憶の型: PhantomData<fn() -> 記憶>,
 }
 
-impl<記憶: Clone + Send + Sync + 'static> 掴んでいる間の記憶の置き場<記憶> {
-    // 反応の識別子と、部品ごとの記憶の名前から作る。
-    pub(in crate::tree::input) fn 反応から作る(
-        反応: &egui::Response,
-        記憶の名前: &'static str,
-    ) -> Self {
+impl<記憶: 掴んでいる間に置く記憶> 掴んでいる間の記憶の置き場<記憶> {
+    // 反応の識別子と、記憶の型が持つ名前から作る。
+    pub(in crate::tree::input) fn 反応から作る(反応: &egui::Response) -> Self {
         Self {
-            識別子: 反応.id.with(記憶の名前),
+            識別子: 反応.id.with(記憶::記憶の名前),
             記憶の型: PhantomData,
         }
     }

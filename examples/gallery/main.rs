@@ -22,6 +22,7 @@ mod sample_frame;
 mod sample_player;
 mod sample_range_frame;
 mod sample_range_frames;
+mod sample_row_list;
 mod sample_texture;
 mod sample_time_block;
 mod sample_time_rows;

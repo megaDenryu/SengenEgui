@@ -3,8 +3,10 @@
 
 mod band_range;
 mod band_value;
+mod dimensionless_ratio;
 mod integer_pixel;
 mod logical_pixel;
+mod non_negative_pixel;
 mod pair;
 mod ratio;
 mod ratio_difference;
@@ -15,10 +17,12 @@ mod zoom;
 pub(crate) use band_range::範囲との位置関係;
 pub use band_range::{帯の全体の範囲, 帯の全体の範囲の不正};
 pub use band_value::{帯の値, 帯の値の差};
+pub(crate) use dimensionless_ratio::次元の無い比;
 pub use integer_pixel::{
     余白の画素, 余白画素, 整数画素の範囲外, 角丸の画素, 角丸画素
 };
 pub use logical_pixel::{画素, 論理画素};
+pub(crate) use non_negative_pixel::負でない論理画素;
 pub use pair::{画素の組, 縦横の論理画素};
 pub use ratio::{割合, 割合の範囲外};
 pub use ratio_difference::{割合の差, 縦横の割合の差};
