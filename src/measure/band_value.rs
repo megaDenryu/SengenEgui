@@ -33,7 +33,7 @@ impl 帯の値 {
         Self(self.0.max(相手.0))
     }
 
-    /// 下限と上限の間へ収める。NaN は下限にする。前提: 下限は上限以下である。
+    // 下限と上限の間へ収める。NaN は下限にする。前提: 下限は上限以下である。
     pub(crate) fn 間へ収める(self, 下限: Self, 上限: Self) -> Self {
         Self(self.0.max(下限.0).min(上限.0))
     }
@@ -77,7 +77,7 @@ impl std::ops::Add<帯の値の差> for 帯の値 {
     }
 }
 
-/// 帯の値の差に比を掛けると、同じ向きで長さが比の倍の差になる。
+// 帯の値の差に比を掛けると、同じ向きで長さが比の倍の差になる。
 impl std::ops::Mul<f64> for 帯の値の差 {
     type Output = Self;
     fn mul(self, 比: f64) -> Self {

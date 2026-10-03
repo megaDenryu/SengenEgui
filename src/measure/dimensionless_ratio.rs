@@ -25,3 +25,7 @@ impl 次元の無い比 {
         <i32 as egui::emath::Numeric>::from_f64(self.0.round())
     }
 }
+
+#[cfg(test)]
+#[path = "dimensionless_ratio_tests.rs"]
+mod dimensionless_ratio_tests;

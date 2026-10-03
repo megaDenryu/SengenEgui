@@ -2,6 +2,8 @@
 //! 値はこのフレームの値を受け取り、変更は新しい値から応答を作って発行する。
 
 mod band_scale;
+#[cfg(test)]
+mod band_scale_tests;
 mod band_width;
 mod button;
 mod checkbox;
