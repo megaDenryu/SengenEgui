@@ -19,7 +19,7 @@ impl 枠の番号 {
 
 /// 枠の選びとは、置いた枠が選んでいる枠かの区別のことである。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(super) enum 枠の選び {
+pub(super) enum 枠の選択状態 {
     選んでいる,
     選んでいない,
 }
@@ -28,7 +28,7 @@ pub(super) enum 枠の選び {
 #[derive(Clone, Copy)]
 pub(super) struct 画面上の枠 {
     pub(super) 矩形: egui::Rect,
-    pub(super) 選び: 枠の選び,
+    pub(super) 選択状態: 枠の選択状態,
 }
 
 /// 画面上の枠の並びとは、置いた順（奥から手前）に並べた画面上の枠のことである。
@@ -42,7 +42,9 @@ impl 画面上の枠の並び {
     }
 
     /// 置いた順（奥から手前）の画面上の枠。描くときに使う。
-    pub(super) fn 奥から順に(&self) -> impl Iterator<Item = &画面上の枠> {
+    pub(super) fn 奥から手前の順に枠を巡る(
+        &self,
+    ) -> impl Iterator<Item = &画面上の枠> {
         self.一覧.iter()
     }
 
@@ -52,14 +54,14 @@ impl 画面上の枠の並び {
     }
 
     /// 押した位置から、掴む枠の番号と掴んだ部分を判定する。どの枠にもつまみにも当たらなければ None を返す。
-    pub(super) fn 掴む所を判定する(
+    pub(super) fn 掴む枠と部分を判定する(
         &self,
         位置: egui::Pos2,
         つまみの当たりの半径: 論理画素,
     ) -> Option<(枠の番号, 範囲枠の掴んだ部分)> {
         let 手前から順に = || self.一覧.iter().enumerate().rev();
         let 選んでいる枠の隅 = 手前から順に()
-            .filter(|(_, 枠)| 枠.選び == 枠の選び::選んでいる)
+            .filter(|(_, 枠)| 枠.選択状態 == 枠の選択状態::選んでいる)
             .find_map(|(位置の番号, 枠)| {
                 範囲枠の掴んだ部分::隅のつまみから判定する(
                     枠.矩形,
