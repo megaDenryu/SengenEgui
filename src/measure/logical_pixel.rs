@@ -38,7 +38,7 @@ impl 論理画素 {
     }
 
     // 基準の長さに対するこの長さの比。基準が0なら比が決まらないため None を返す。
-    pub(crate) fn に対する比(self, 基準: Self) -> Option<super::次元の無い比> {
+    pub(crate) fn 基準で割った比(self, 基準: Self) -> Option<super::次元の無い比> {
         super::次元の無い比::二つの量から求める(
             self.倍精度の小数にする(),
             基準.倍精度の小数にする(),
