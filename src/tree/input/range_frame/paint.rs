@@ -7,7 +7,7 @@ use crate::style::スタイル;
 
 /// 枠の外側に重ねる半透明の黒。明暗のどちらの基調でも「外側は切り捨てる側」と読めるよう黒に固定する。
 const 枠の外を暗くする色: egui::Color32 = egui::Color32::from_black_alpha(128);
-const 既定の枠線の太さ: 論理画素 = 画素(2.0);
+pub(in crate::tree::input) const 既定の枠線の太さ: 論理画素 = 画素(2.0);
 const つまみの一辺: 論理画素 = 画素(10.0);
 
 /// 範囲枠の描き方とは、枠線とつまみを描くときに使う線と色の組のことである。
@@ -40,16 +40,25 @@ impl 範囲枠の描き方 {
             描き手.rect_filled(暗くする矩形, 0.0, 枠の外を暗くする色);
         }
         描き手.rect_stroke(枠の矩形, 0.0, self.枠線, egui::StrokeKind::Middle);
-        let 一辺 = つまみの一辺.eguiへ渡す値();
-        for 隅 in [
-            枠の矩形.left_top(),
-            枠の矩形.right_top(),
-            枠の矩形.left_bottom(),
-            枠の矩形.right_bottom(),
-        ] {
-            let つまみ = egui::Rect::from_center_size(隅, egui::vec2(一辺, 一辺));
-            描き手.rect_filled(つまみ, 0.0, self.つまみの色);
-        }
+        四隅のつまみを描く(描き手, 枠の矩形, self.つまみの色);
+    }
+}
+
+/// 枠の4隅に、隅を中心とする正方形のつまみを塗る。
+pub(in crate::tree::input) fn 四隅のつまみを描く(
+    描き手: &egui::Painter,
+    枠の矩形: egui::Rect,
+    つまみの色: egui::Color32,
+) {
+    let 一辺 = つまみの一辺.eguiへ渡す値();
+    for 隅 in [
+        枠の矩形.left_top(),
+        枠の矩形.right_top(),
+        枠の矩形.left_bottom(),
+        枠の矩形.right_bottom(),
+    ] {
+        let つまみ = egui::Rect::from_center_size(隅, egui::vec2(一辺, 一辺));
+        描き手.rect_filled(つまみ, 0.0, つまみの色);
     }
 }
 

@@ -8,6 +8,7 @@ pub mod drag;
 pub mod font_measure;
 pub mod glyph;
 pub mod image;
+pub mod multiple_range_frames;
 pub mod output;
 pub mod overlay;
 pub mod overlay_idle;

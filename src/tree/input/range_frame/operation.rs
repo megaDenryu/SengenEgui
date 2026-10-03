@@ -47,7 +47,17 @@ pub enum 範囲枠の操作 {
 impl 範囲枠の掴んだ部分 {
     /// 画面上の位置が枠のどの部分に当たるかを判定する。隅のつまみを内側より優先する。
     /// 枠にもつまみにも当たらなければ None を返す。
-    pub(super) fn 位置から判定する(
+    pub(in crate::tree::input) fn 位置から判定する(
+        枠の矩形: egui::Rect,
+        位置: egui::Pos2,
+        つまみの当たりの半径: 論理画素,
+    ) -> Option<Self> {
+        Self::隅のつまみから判定する(枠の矩形, 位置, つまみの当たりの半径)
+            .or_else(|| 枠の矩形.contains(位置).then_some(Self::内側))
+    }
+
+    /// 画面上の位置が枠の4隅のつまみのどれに当たるかを判定する。どの隅のつまみにも当たらなければ None を返す。
+    pub(in crate::tree::input) fn 隅のつまみから判定する(
         枠の矩形: egui::Rect,
         位置: egui::Pos2,
         つまみの当たりの半径: 論理画素,
@@ -63,11 +73,10 @@ impl 範囲枠の掴んだ部分 {
             .into_iter()
             .find(|(_, 隅)| 隅.distance(位置) <= 半径)
             .map(|(部分, _)| 部分)
-            .or_else(|| 枠の矩形.contains(位置).then_some(Self::内側))
     }
 
     /// この部分の上にポインタがあるときに出すカーソルの形。
-    pub(super) fn カーソルの形(self) -> egui::CursorIcon {
+    pub(in crate::tree::input) fn カーソルの形(self) -> egui::CursorIcon {
         match self {
             Self::内側 => egui::CursorIcon::Move,
             Self::左上の隅 | Self::右下の隅 => egui::CursorIcon::ResizeNwSe,
