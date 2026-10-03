@@ -6,7 +6,9 @@
 //! ドラッグにならず押しただけとして扱われるからである。
 
 use super::drag::区間の帯のドラッグ;
-use super::layout::{区間の帯の配置, 帯の段の高さ, 頭の段の高さ};
+use super::layout::{
+    位置の印の頭の領域の高さ, 区間の帯の配置, 帯の領域の高さ
+};
 use super::paint::区間の帯の描き方;
 use super::区間の帯型;
 
@@ -17,7 +19,7 @@ impl<M> 区間の帯型<M> {
         発行した応答: &mut Vec<M>,
     ) -> egui::Response {
         let 幅 = self.幅.占める幅(ui);
-        let 高さ = (頭の段の高さ + 帯の段の高さ).eguiへ渡す値();
+        let 高さ = (位置の印の頭の領域の高さ + 帯の領域の高さ).eguiへ渡す値();
         let (矩形, 反応) = ui.allocate_exact_size(egui::vec2(幅, 高さ), egui::Sense::drag());
         let 配置 = 区間の帯の配置::確保した矩形を分ける(矩形, self.全体);
         区間の帯の描き方::装飾と見た目から作る(self.装飾値, ui.visuals()).描く(
