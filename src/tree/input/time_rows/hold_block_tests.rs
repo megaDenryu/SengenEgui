@@ -3,7 +3,7 @@
 //! 直に呼んで確かめる。
 
 use super::block::時間の塊;
-use super::event::読み取った出来事;
+use super::event::時間の行の並びで読み取った出来事;
 use super::hit::画面上の塊の並び;
 use super::hold::{掴んだ後のフレームを読んだ結果, 掴んでいる間の記憶};
 use super::hold_block::塊を掴んでいる間の記憶;
@@ -65,7 +65,9 @@ fn 塊の操作一覧(
         .出来事一覧
         .iter()
         .filter_map(|出来事| match 出来事 {
-            読み取った出来事::塊の操作(_, 操作) => Some(*操作),
+            時間の行の並びで読み取った出来事::塊の操作(_, 操作) => {
+                Some(*操作)
+            }
             _ => None,
         })
         .collect()
