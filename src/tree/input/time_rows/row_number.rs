@@ -1,0 +1,43 @@
+//! 時間の行の番号と時間の行の差。時間の行の並びは行を置いた順に下から上へ積むため、番号は下の行ほど小さく、
+//! 差は上へ動かした向きを正とする。番号と差を裸の整数で出さないのは、置いた順の番号と画面の上からの順を取り違えないためである。
+
+/// 時間の行の番号とは、時間の行の並びに行を置いた順（0から。いちばん下の行が0）の番号のことである。
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(transparent)]
+pub struct 時間の行の番号(usize);
+
+/// 時間の行の差とは、2つの時間の行の番号の差を、上へ動かした行の数（下へは負）で表した値のことである。
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(transparent)]
+pub struct 時間の行の差(i32);
+
+impl 時間の行の番号 {
+    /// 行を置いた順の番号（0から。いちばん下の行が0）から作る。
+    pub const fn 置いた順の番号から生成する(番号: usize) -> Self {
+        Self(番号)
+    }
+
+    /// 行を置いた順の番号（0から）。利用する側が自分の行の番号へ移す境界でだけ使う。
+    pub const fn 置いた順の番号(self) -> usize {
+        self.0
+    }
+
+    /// 差だけ動かした行の番号。0より下になるなら None を返す。行の数を超えるかは確かめない（行の数は利用する側が持つ）。
+    pub fn 差だけ動かした番号(self, 差: 時間の行の差) -> Option<Self> {
+        self.0
+            .checked_add_signed(isize::try_from(差.0).ok()?)
+            .map(Self)
+    }
+}
+
+impl 時間の行の差 {
+    /// 上へ動かした行の数から作る。下へ動かしたなら負の数を渡す。
+    pub const fn 上へ動かした行の数から生成する(行の数: i32) -> Self {
+        Self(行の数)
+    }
+
+    /// 上へ動かした行の数（下へは負）。利用する側が自分の行の番号へ移す境界でだけ使う。
+    pub const fn 上へ動かした行の数(self) -> i32 {
+        self.0
+    }
+}

@@ -23,9 +23,12 @@ mod sample_player;
 mod sample_range_frame;
 mod sample_range_frames;
 mod sample_texture;
+mod sample_time_block;
+mod sample_time_rows;
 mod screen;
 mod state;
 mod styles;
+mod time_rows_section;
 
 use eframe::egui;
 use sengen_egui::{拡大縮小の仕方, 日本語フォントの候補};

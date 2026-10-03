@@ -15,6 +15,8 @@ pub mod overlay_idle;
 pub mod range_band;
 pub mod range_frame;
 pub mod ratio_place;
+pub mod time_rows;
+pub mod time_rows_point;
 
 use sengen_egui::ノード;
 

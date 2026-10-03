@@ -4,6 +4,7 @@ use sengen_egui::{範囲枠の操作, 色, 見えている行の範囲};
 
 use crate::sample_player::再生画面の応答;
 use crate::sample_range_frames::見本の複数の範囲枠の応答;
+use crate::sample_time_rows::見本の時間の行の並びの応答;
 
 /// 応答とは、見本帳の画面の操作の語彙のことである。
 #[derive(Clone, Debug)]
@@ -27,4 +28,5 @@ pub enum 応答 {
     複数の範囲枠(見本の複数の範囲枠の応答),
     画像をずらした,
     再生画面(再生画面の応答),
+    時間の行の並び(見本の時間の行の並びの応答),
 }

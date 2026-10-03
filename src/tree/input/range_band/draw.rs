@@ -8,7 +8,7 @@
 use super::drag::区間の帯のドラッグ;
 use super::layout::{区間の帯の配置, 帯の段の高さ, 頭の段の高さ};
 use super::paint::区間の帯の描き方;
-use super::{区間の帯型, 帯の幅};
+use super::区間の帯型;
 
 impl<M> 区間の帯型<M> {
     pub(crate) fn 描画する(
@@ -16,10 +16,7 @@ impl<M> 区間の帯型<M> {
         ui: &mut egui::Ui,
         発行した応答: &mut Vec<M>,
     ) -> egui::Response {
-        let 幅 = match self.幅 {
-            帯の幅::使える幅いっぱい => ui.available_width(),
-            帯の幅::指定(幅) => 幅.eguiへ渡す値(),
-        };
+        let 幅 = self.幅.占める幅(ui);
         let 高さ = (頭の段の高さ + 帯の段の高さ).eguiへ渡す値();
         let (矩形, 反応) = ui.allocate_exact_size(egui::vec2(幅, 高さ), egui::Sense::drag());
         let 配置 = 区間の帯の配置::確保した矩形を分ける(矩形, self.全体);
