@@ -4,6 +4,7 @@
 //! 色は、装飾の枠線色があればそれを、無ければテーマの選択の縁の色を使う。
 
 use super::hit::{枠の選択状態, 画面上の枠の並び};
+use super::複数の範囲枠の鍵;
 use crate::measure::{画素, 論理画素};
 use crate::style::スタイル;
 use crate::tree::input::range_frame::paint::{
@@ -35,8 +36,10 @@ impl 複数の範囲枠の描き方 {
     }
 
     /// 選んでいない枠を奥から順に描き、その上に選んでいる枠を奥から順に描く。
-    pub(super) fn 描く(
-        &self, 描き手: &egui::Painter, 枠の並び: &画面上の枠の並び
+    pub(super) fn 描く<鍵: 複数の範囲枠の鍵>(
+        &self,
+        描き手: &egui::Painter,
+        枠の並び: &画面上の枠の並び<'_, 鍵>,
     ) {
         for 選択状態 in [枠の選択状態::選んでいない, 枠の選択状態::選んでいる]
         {
