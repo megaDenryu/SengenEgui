@@ -1,16 +1,21 @@
 //! 入力の族。操作されると応答 M を発する部品のまとまりである。
 //! 値はこのフレームの値を受け取り、変更は新しい値から応答を作って発行する。
 
+mod band_scale;
 mod button;
 mod checkbox;
 mod color;
 mod combo;
+mod component_key;
+mod draw;
 mod erased;
+mod horizontal_drag;
 mod link;
 mod map;
 mod multiline;
 mod multiple_range_frames;
 mod number;
+mod pointer_drag;
 mod pressable_image;
 mod radio;
 mod range_band;
@@ -80,33 +85,6 @@ pub enum 入力の部品<M> {
     区間の帯(区間の帯型<M>),
     /// 時間の軸の下に積んだ行に時間の塊を並べ、塊と位置の線をドラッグで動かす部品（塊の鍵の型は変換時に閉包へ閉じ込める）。
     時間の行の並び(型を消した入力型<M>),
-}
-
-impl<M: Clone> 入力の部品<M> {
-    pub(crate) fn 描画する(
-        &self,
-        ui: &mut egui::Ui,
-        発行した応答: &mut Vec<M>,
-    ) -> egui::Response {
-        match self {
-            Self::ボタン(中身) => 中身.描画する(ui, 発行した応答),
-            Self::チェックボックス(中身) => 中身.描画する(ui, 発行した応答),
-            Self::一行テキスト入力(中身) => 中身.描画する(ui, 発行した応答),
-            Self::複数行テキスト入力(中身) => 中身.描画する(ui, 発行した応答),
-            Self::数値入力(中身) => 中身.描画する(ui, 発行した応答),
-            Self::スライダー(中身) => 中身.描画する(ui, 発行した応答),
-            Self::ラジオボタン(中身) => 中身.描画する(ui, 発行した応答),
-            Self::選択ボタン(中身) => 中身.描画する(ui, 発行した応答),
-            Self::選択欄(中身) => 中身.描画する(ui, 発行した応答),
-            Self::色選択(中身) => 中身.描画する(ui, 発行した応答),
-            Self::リンク(中身) => 中身.描画する(ui, 発行した応答),
-            Self::押せる画像(中身) => 中身.描画する(ui, 発行した応答),
-            Self::範囲枠付き画像(中身) => 中身.描画する(ui, 発行した応答),
-            Self::複数の範囲枠(中身) => 中身.描画する(ui, 発行した応答),
-            Self::区間の帯(中身) => 中身.描画する(ui, 発行した応答),
-            Self::時間の行の並び(中身) => 中身.描画する(ui, 発行した応答),
-        }
-    }
 }
 
 ノードへ変換する!(入力, 入力の部品::ボタン, ボタン型<M>);

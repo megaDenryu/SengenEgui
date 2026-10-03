@@ -80,7 +80,11 @@ fn main() -> std::process::ExitCode {
             );
             let 再生 = sample_player::見本の再生::登録して作る(eguiの本体)?;
             Ok(Box::new(見本帳アプリ {
-                状態: state::状態::新規(画像, 再生),
+                状態: state::状態::新規(
+                    画像,
+                    再生,
+                    sample_time_rows::見本の時間の行の並び::新規()?,
+                ),
             }))
         }),
     );

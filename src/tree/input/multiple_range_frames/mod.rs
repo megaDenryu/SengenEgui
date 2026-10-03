@@ -12,6 +12,7 @@
 mod cursor;
 mod drag;
 mod draw;
+mod grab;
 mod hit;
 mod hold;
 mod operation;
@@ -30,11 +31,7 @@ use operation::縦横比の扱いの決め方;
 /// 部品が占める大きさは、指定した寸法の幅と高さに、それぞれこの余白の2倍を足した大きさになる。
 pub const 複数の範囲枠の周りの余白: 論理画素 = つまみの当たりの半径;
 
-/// 複数の範囲枠の鍵とは、利用する側が置いた枠を見分けるための値の型が満たす条件のことである。
-/// 掴んでいる間の記憶を egui の一時記憶へ置くため、複製でき、スレッドをまたいで渡せる必要がある。
-pub trait 複数の範囲枠の鍵: Eq + Clone + Send + Sync + 'static {}
-
-impl<型: Eq + Clone + Send + Sync + 'static> 複数の範囲枠の鍵 for 型 {}
+pub use crate::tree::input::component_key::部品が見分ける鍵 as 複数の範囲枠の鍵;
 
 /// 置いた範囲枠とは、枠を見分ける鍵と、基準の矩形に対する枠の矩形と、選択状態の組のことである。
 struct 置いた範囲枠<鍵> {
