@@ -16,6 +16,7 @@ mod player_page;
 mod player_video;
 mod range_frames_section;
 mod ratio_place_section;
+mod response;
 mod sample_clip;
 mod sample_frame;
 mod sample_player;

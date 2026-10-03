@@ -1,39 +1,14 @@
-//! 見本帳の状態と応答。画面は状態を読んで組み、操作は応答として発行され、ここで状態へ適用する。
+//! 見本帳の状態。画面は状態を読んで組み、操作は応答（response.rs）として発行され、ここで状態へ適用する。
 
 use sengen_egui::{
-    差し替えられるテクスチャ, 画素の並びの不正, 範囲枠の操作, 色, 見えている行の範囲,
+    差し替えられるテクスチャ, 画素の並びの不正, 色, 見えている行の範囲
 };
 
-use crate::sample_player::{再生画面の応答, 見本の再生};
+pub use crate::response::応答;
+use crate::sample_player::見本の再生;
 use crate::sample_range_frame::見本の範囲枠;
-use crate::sample_range_frames::{
-    見本の複数の範囲枠, 見本の複数の範囲枠の応答
-};
+use crate::sample_range_frames::見本の複数の範囲枠;
 use crate::sample_texture::見本の画素のバイト列;
-
-/// 応答とは、見本帳の画面の操作の語彙のことである。
-#[derive(Clone, Debug)]
-pub enum 応答 {
-    タブを選んだ(usize),
-    押した(&'static str),
-    有効を切り替えた(bool),
-    一行を変えた(String),
-    合言葉を変えた(String),
-    複数行を変えた(String),
-    数を変えた(i32),
-    小数を変えた(f32),
-    選んだ(&'static str),
-    色を変えた(色),
-    ウィンドウを開閉した(bool),
-    覆いを開閉した(bool),
-    受け取った(String),
-    記録を消した,
-    記録の見えている行(見えている行の範囲),
-    範囲枠を操作した(範囲枠の操作),
-    複数の範囲枠(見本の複数の範囲枠の応答),
-    画像をずらした,
-    再生画面(再生画面の応答),
-}
 
 /// 状態とは、見本帳の画面が読む値の集まりのことである。
 pub struct 状態 {
